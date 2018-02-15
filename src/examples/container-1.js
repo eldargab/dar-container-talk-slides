@@ -1,0 +1,7 @@
+app.def('result', (abcd, xy) => abcd + xy)
+app.def('abcd', (ab, b) => ab + b)
+app.def('ab', (y, b) => y + b)
+app.def('xy', (abcd, x) => abcd + x)
+app.def('x', (cd, d) => cd + d)
+app.def('cd', (b, y) => b + y)
+app.def('d', (ab, abcd) => ab + abcd)

@@ -1,0 +1,28 @@
+:root {
+  --font-0: 1rem;
+  --font-1: 1.25rem;
+  --font-2: 1.5rem;
+  --font-3: 2.25rem;
+  --font-4: 3rem;
+  --font-5: 6rem;
+  --font-small: .875rem;
+  --font-tiny: .75rem;
+}
+
+
+gen-font-sizes()
+  for s in 0 1 2 3 4 5
+    .f{s} {
+      font-size: unquote('var(--font-' + s + ')')
+    }
+  for s in tiny small
+    .f-{s} {
+      font-size: unquote('var(--font-' + s + ')')
+    }
+
+
+gen-font-weights()
+  for w in normal 100 200 300 400 500 600 700 800
+    .fw-{w} {
+      font-weight: w
+    }

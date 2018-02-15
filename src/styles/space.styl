@@ -1,0 +1,89 @@
+:root {
+  --space-0: 0;
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: 1rem;
+  --space-4: 2rem;
+  --space-5: 4rem;
+  --space-6: 8rem;
+};
+
+
+space(size)
+  unquote('var(--space-' + size + ')')
+
+
+ma(size)
+  margin: space(size)
+
+
+mv(size)
+  margin-top: space(size)
+  margin-bottom: space(size)
+
+
+mh(size)
+  margin-left: space(size)
+  margin-right: space(size)
+
+
+mt(size)
+  margin-top: space(size)
+
+
+mb(size)
+  margin-bottom: space(size)
+
+
+ml(size)
+  margin-left: space(size)
+
+
+mr(size)
+  margin-right: space(size)
+
+
+pa(size)
+  padding: space(size)
+
+
+pv(size)
+  padding-top: space(size)
+  padding-bottom: space(size)
+
+
+ph(size)
+  padding-left: space(size)
+  padding-right: space(size)
+
+
+pt(size)
+  padding-top: space(size)
+
+
+pb(size)
+  padding-bottom: space(size)
+
+
+pl(size)
+  padding-left: space(size)
+
+
+pr(size)
+  padding-right: space(size)
+
+
+gen-space-classes(type)
+  for side in a v h t b l r
+    for size in (0..6)
+      .{type}{side}{size} {
+        {type}{side}: size;
+      }
+
+
+gen-margins()
+  gen-space-classes(m)
+
+
+gen-paddings()
+  gen-space-classes(p)
