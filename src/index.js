@@ -1,4 +1,4 @@
-import Reveal from 'reveal.js'
+import Reveal from '../reveal/reveal.js'
 import hljs from 'highlight.js/lib/highlight'
 import JS_LANG from 'highlight.js/lib/languages/javascript'
 

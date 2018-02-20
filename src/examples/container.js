@@ -5,3 +5,6 @@ app.def('xy', (abcd, x) => abcd + x)
 app.def('x', (cd, d) => cd + d)
 app.def('cd', (b, y) => b + y)
 app.def('d', (ab, abcd) => ab + abcd)
+
+let result = app.compile('result', ['b', 'y'])
+result(1, 1) // => 13

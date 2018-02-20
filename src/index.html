@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="stylesheet" type="text/css" href="../node_modules/reveal.js/css/reveal.css">
+  <link rel="stylesheet" type="text/css" href="../reveal/reveal.css">
   <link rel="stylesheet" type="text/css" href="./index.styl">
   <link rel="stylesheet" type="text/css" href="../node_modules/highlight.js/styles/vs.css">
   <title>Dependency Injection: Расширяем область применения</title>
@@ -18,7 +18,7 @@
       </section>
 
       <section id="goals">
-        <h1 class="f3 fw-300 gray mb3 ">Цели доклада</h1>
+        <h1 class="f3 fw-300 gray mb3">Цели доклада</h1>
         <ol>
           <li class="mb2 fragment">Сформулировать ключевую идею лежащую в основе DI</li>
           <li class="mb2 fragment">Представить новый контейнер</li>
@@ -79,19 +79,35 @@
           приведёт только к усложнению (ведь кол-во входных/выходных параметров будет не меньшим чем кол-во объединённых операций),
           а небольшие изменения в спецификации скорее всего разрушат всю концепцию отдельно взятого разбиения.
           <br><br>
-          Естественно, мы можем не программировать всё это вручную.
-          Приведём пример того, как это может выглядеть.
+          Естественно, мы можем не программировать порядок вручную.
+          Приведём пример того, как это может выглядеть...
         </aside>
       </section>
 
       <section class="size-full">
         <div class="flex align-items-center size-full">
-<pre>
-<code class="javascript"><include src="./examples/container-1.js"/></code>
-<code class="javascript fragment"><include src="./examples/container-2.js"/></code>
-</pre>
+          <pre><code class="javascript"><include src="./examples/container.js"/></code></pre>
           <img src="./examples/complex.svg" class="ml6" style="height: 80%; opacity: 0.7;">
         </div>
+        <aside class="notes">
+          В начале мы определим наши элементарные действия обычным спрособом,
+          а затем при помощи выражения `app.compile()` попросим контейнер
+          скомпилировать функцию, которая возвращает `result`, а в качестве параметров
+          принимает готовые значения `a` и `b`.
+          <br><br>
+          Заметьте, что наш код будет оставаться простым независимо
+          от кол-ва элементарных операций и сложности их взаимозависимости.
+          <br><br>
+          Это и есть ключевая идея лежащая в основе DI.
+        </aside>
+      </section>
+
+      <section>
+        <aside class="notes">
+          У тех, кто только начинает знакомиться с DI, к этому моменту может возникнуть
+          жгучее желание попробовать применить это на практике.
+          Действительно, давайте попробуем...
+        </aside>
       </section>
 
       <section style="margin-top: -2%">
@@ -101,9 +117,7 @@
 
 <span class="fragment">app.def('cookies', (req) => parse(req.headers['Cookie'])))</span>
 
-<span class="fragment">app.def('db', () => open('mysql://...'))</span><span class="fragment"> // При каждом запросе ???</span>
-
-<span class="fragment">app.level('Response', 'response', ['req']) // Уровень !!!</span>
+<span class="fragment">app.def('db', () => open('mysql://...'))</span>
 
 <span class="fragment">app.def('main', function(Response) {
   http.createServer(function(req, res)) {
@@ -113,7 +127,50 @@
   })
 })</span>
 
-<span class="fragment">app.compile('main')(); // Запускаем</span></code></pre>
+<span class="fragment">app.level('Response', 'response', ['req']) // Уровень !!!
+
+app.compile('main')(); // Запускаем</span></code></pre>
+
+        <aside class="notes">
+          <p>
+            Представим в общих чертах бэкэнд типичного WEB-приложения и предположим, что всё,
+            что нам нужно, это выводить текстовую страницу с приветствием.
+          </p>
+          <p>
+            Определим текст ответа
+          </p>
+          <p>...</p>
+          <p>
+            Определим подключение к БД.
+          </p>
+          <p>
+            Определим способ запуска сервера.
+            Как видим, теперь нам недостаёт только функции `Response`,
+            которая должна принимать `req` и возвращать приветственную страницу,
+            причём вся информация о её формировании в контейнере уже имеется.
+          </p>
+          <p>
+            Механизм, который позволит нам определить эту функцию, мы назовём уровнем.
+          </p>
+          <p>
+            При помощи выражения `app.level('Response', 'response', ['req'])` мы указали, что нам
+            нужна функция `Response`, которая возвращает `response`
+            принимая в качестве аргумента готовое значение `req`.
+            Т.е. передали всё тоже самое же, что и методу `.compile()`.
+          </p>
+        </aside>
+      </section>
+
+      <section>
+        <aside class="notes">
+          <p>
+            Как это всё работает.
+          </p>
+          <p>
+            3. При вызове уровня, каждый раз выполняются только те подзадачи, которые непосредственно зависят
+            от начальных аргументов. Все остальные кэшируются на уровнях ниже.
+          </p>
+        </aside>
       </section>
 
     </div>

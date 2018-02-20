@@ -3,11 +3,6 @@
 @require './styles/flex.styl'
 
 
-* {
-  box-sizing: border-box;
-}
-
-
 html, body {
   font-family: "Helvetica Neue";
   font-size: 24px;
@@ -17,8 +12,7 @@ html, body {
 }
 
 
-.reveal > .slides > * {
-  margin-top: -5%;
+.slides > * {
   text-align: left;
 }
 
@@ -52,16 +46,10 @@ ol > li::before {
 }
 
 
-.reveal pre code {
+pre code {
   font-family: Menlo, Consolas, Inconsolata, monospace;
   line-height: 1.5;
   font-size: var(--font-small);
-}
-
-
-.size-full {
-  width: 100%;
-  height: 100%;
 }
 
 
@@ -70,12 +58,17 @@ ol > li::before {
 }
 
 
-.reveal {
-  gen-paddings()
-  gen-margins()
-  gen-font-weights()
-  gen-font-sizes()
+gen-paddings()
+gen-margins()
+gen-font-weights()
+gen-font-sizes()
 
-  .text-align-left { text-align: left; }
-  .text-align-center { text-align: center; }
+
+.text-align-left { text-align: left; }
+.text-align-center { text-align: center; }
+
+
+.size-full {
+  width: 100%;
+  height: 100%;
 }
