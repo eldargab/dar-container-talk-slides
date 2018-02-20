@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "parcel-bundler": "^1.5.1",
+    "parcel-plugin-pug": "^0.2.5",
     "posthtml-include": "^1.1.0",
     "pug": "^2.0.0-rc.4",
     "stylus": "^0.54.5"

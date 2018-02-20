@@ -14,7 +14,7 @@ graphs: $(patsubst %.dot, %.svg, $(wildcard src/examples/*.dot))
 
 
 start: assets
-	@./node_modules/.bin/parcel src/index.html
+	@./node_modules/.bin/parcel src/index.pug
 
 
 clean:
