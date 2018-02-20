@@ -4092,6 +4092,21 @@
 				updateControls();
 				updateProgress();
 
+				// HACK
+				if (fragmentsShown.length) {
+					// We do not want to see same fragment revealing twice.
+					setTimeout(function () {
+						fragmentsShown.forEach(function (el) {
+							el.classList.remove('fragment');
+                        });
+                    }, 200)
+
+					fragmentsShown.forEach(function (el) {
+						let state = el.getAttribute('data-state');
+						if (state) currentSlide.classList.add(state)
+                    });
+				}
+
 				return !!( fragmentsShown.length || fragmentsHidden.length );
 
 			}
@@ -4122,7 +4137,7 @@
 	 */
 	function previousFragment() {
 
-		return navigateFragment( null, -1 );
+		return false;
 
 	}
 

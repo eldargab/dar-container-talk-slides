@@ -9,6 +9,8 @@ hljs.initHighlighting();
 
 Reveal.initialize({
   history: true,
-  center: true,
+  center: false,
+  progress: false,
+  controlsTutorial: false,
   pdfMaxPagesPerSlide: 1
 });
