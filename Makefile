@@ -7,6 +7,7 @@ graphs: $(patsubst %.dot, %.svg, $(wildcard src/examples/*.dot))
 	@dot -Tsvg \
 	-Gfontname="Helvetica Neue" \
 	-Nfontname="Helvetica Neue" \
+	-Nfontsize="16" \
 	-Efontname="Helvetica Neue" \
 	$< \
 	| tail -n +7 \

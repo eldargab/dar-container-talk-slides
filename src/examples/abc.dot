@@ -1,4 +1,4 @@
 digraph abc {
-  abc -> {ab, c}
+  abc -> {ab, C}
   ab -> {A, B}
 }

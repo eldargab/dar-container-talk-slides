@@ -7,7 +7,7 @@ section
   h1.f3.fw-300.gray.mb3 Цели доклада
   ol
     li.mb2.fragment Сформулировать ключевую идею лежащую в основе DI
-    li.mb2.fragment Представить новый контейнер
+    li.mb2.fragment(data-fragment-index=1) Представить новый контейнер
 
   aside.notes
     p.
@@ -16,28 +16,29 @@ section
       и обладает важной особенностью, которая позволяет применять
       ключевую идею, лежащую в основе DI, более широко и с большим успехом.
     p.
-      С формулировки ключевой идеи DI (а так же такой системы сборки как Make)
-      мы и начнём...
+      С формулировки ключевой идеи DI мы и начнём...
 
 
-section.size-full
-  .size-full.flex.align-items-center
+section
+  .fullsize.flex.align-items-center.pad-center
     pre: code.javascript
       include examples/abc.js
-    img(src="examples/abc.svg", style="height: 70%; opacity: 0.7;")
+    .example-graph.ml4
+      include examples/abc.svg
 
   aside.notes
     p.
       Для этого посмотрим на наш код не как на некую последовательность действий,
       а как на граф, вершины которого обозначают элементарные операции,
-      а рёбра их непосредственную зависимость от результатов других операций.
+      а рёбра их непосредственную зависимость друг от друга.
 
 
-section.size-full
-  .size-full.flex.align-items-center
-    pre.fragment: code.javascript
+section
+  .fullsize.flex.align-items-center.pad-center
+    .example-graph
+      include examples/simple.svg
+    pre.ml5.fragment(style="padding-top: 3%"): code.javascript
       include examples/simple.js
-    img(src="examples/simple.svg", style="height: 70%; opacity: 0.7;")
 
   aside.notes
     p.

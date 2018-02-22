@@ -12,5 +12,6 @@ Reveal.initialize({
   center: false,
   progress: false,
   controlsTutorial: false,
+  showNotes: true,
   pdfMaxPagesPerSlide: 1
 });
