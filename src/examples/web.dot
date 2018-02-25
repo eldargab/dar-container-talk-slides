@@ -1,0 +1,5 @@
+digraph web {
+  main -> Response
+  Response -> db [style="dashed"]
+  db -> connString
+}

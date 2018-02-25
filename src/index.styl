@@ -100,3 +100,23 @@ ol > li::before {
   color: var(--gray);
   padding-right: var(--space-2);
 }
+
+
+highlight-subgraph(color)
+  ellipse, path {
+    stroke: color;
+  }
+  polygon {
+    fill: color;
+    stroke: color;
+  }
+
+
+.highlight-req .example-graph .req {
+  highlight-subgraph: red;
+}
+
+
+.highlight-dep .example-graph .dep {
+  highlight-subgraph: green;
+}

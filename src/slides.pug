@@ -129,7 +129,10 @@ section
       |
       |
       |
-      span.fragment app.def('db', () => open('mysql://...'))
+      span.fragment
+        | app.def('db', (connString) => open(connString))
+        |
+        | app.def('connString', () => process.ENV.DB_URL)
       |
       |
       |
@@ -196,3 +199,27 @@ section
       других подзадач и даже вызывать рекурсивно.
     p.
       Посмотрим как это работает...
+
+
+section
+  .fragment(data-state="highlight-req")
+  .fragment(data-state="highlight-dep")
+  .fullsize.flex.align-items-center.pad-center.justify-content
+    .flex.fullwidth
+      .example-graph.width-1of2
+        include examples/web-response.svg
+      .example-graph.fragment
+        include examples/web.svg
+
+  aside.notes
+    p.
+      На слайде представлена часть графа,
+      которая относится к вычислению `response`
+      (связана с уровнем `Response`).
+    p.
+      В ней легко можно выделить узлы, которые зависят от
+      начальных аргументов уровня. Про такие узлы мы будем говорить,
+      что они принадлежат уровню.
+    p.
+      Из оставшихся узлов выделим те, которые являются непосредственными
+      зависимостями узлов уровня - это зависимости уровня.
