@@ -13,7 +13,3 @@ app.def('main', function(Response) {
     res.end(msg);
   })
 })
-
-app.level('Response', 'response', ['req']) // Уровень !!!
-
-app.compile('main')(); // Запускаем
