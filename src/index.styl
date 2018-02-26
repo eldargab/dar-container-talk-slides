@@ -8,12 +8,14 @@
 
 :root {
   --main-text-color: rgba(0, 0, 0, 0.7);
+  --main-font: "Helvetica Neue";
+  --monospace-font: Menlo, Consolas, Inconsolata, monospace;
   --gray: #aaa;
 }
 
 
 html, body {
-  font-family: "Helvetica Neue";
+  font-family: var(--main-font);
   font-size: 24px;
   letter-spacing: 1px;
   color: var(--main-text-color);
@@ -27,27 +29,38 @@ html, body {
 
 
 .reveal .speaker-notes {
-  font-family: "Helvetica Neue";
+  font-family: var(--main-font);
   font-size: 16px;
   color: var(--main-text-color);
   ph(2)
   pv(0)
   &::before {
-    // opacity: 1;
-    font-weight: 600;
-    font-size: 20px
-    mv(3)
+    content: "Комментарии";
+    font-weight: 300;
+    font-size: 24px
+    opacity: 1;
+    color: var(--gray);
+    mv(3);
   }
   p {
     mv(2)
   }
+  .inline-code {
+    font-family: var(--monospace-font);
+    color: #888;
+  }
+}
+
+
+span.arrow {
+  color: var(--gray);
 }
 
 
 pre code {
-  font-family: Menlo, Consolas, Inconsolata, monospace;
-  line-height: 1.5;
+  font-family: var(--monospace-font);
   font-size: var(--font-small);
+  line-height: 1.5;
 }
 
 
