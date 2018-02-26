@@ -1,9 +1,9 @@
 digraph complex {
   result -> {abcd, xy}
   abcd -> {ab, b}
-  ab -> {y, b}
+  ab -> {a, b}
   xy -> {abcd, x}
   x -> {cd, d}
-  cd -> {b, y}
+  cd -> {a, b}
   d -> {ab, abcd}
 }
