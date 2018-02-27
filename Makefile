@@ -22,7 +22,7 @@ clean:
 	@rm -rf .cache dist
 
 
-build: clean
+build:
 	@./node_modules/.bin/parcel build src/index.pug --no-cache --public-url ./ --out-dir docs
 
 
