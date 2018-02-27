@@ -1,6 +1,8 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Dependency Injection: Расширяем область применения</title><link rel="stylesheet" type="text/css" href="4fabdc99a78b4bc9cb0768c324d8b040.css"><link rel="stylesheet" type="text/css" href="81411007409b3a3f512d26af03026dde.css"><link rel="stylesheet" type="text/css" href="c9497c71762a503e554cde78f564bb8a.css"></head><body><div class="reveal"><div class="slides"><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb1">Dependency Injection</h1><p>Расширяем область применения</p></div></div><aside class="notes"><p>Символ <span class="arrow">&#x27f6</span> в комментариях означает,
 что прежде чем читать дальше нужно открыть
-скрытый фрагмент слайда.
+скрытый фрагмент.</p><p>Предполагается, что вы будете прежде всего
+читать комментарии (как обычную статью),
+обращаясь к слайдам, когда это необходимо.
 </p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Цели доклада</h1><ol><li class="mv2">Сформулировать ключевую идею лежащую в основе DI</li><li class="mv2">Представить новый контейнер</li><li class="mv2">Обсудить его реализацию</li></ol></div></div><aside class="notes"><p>В этом докладе мы хотим представить новый контейнер.
 Он весьма не похож на традиционные Java контейнеры
 и обладает важной особенностью, которая позволяет применять
@@ -555,16 +557,16 @@ result(1, 1) // => 13</code></pre><div class="example-graph ml4"><svg width="200
 
 </p></aside></section><section><div class="fullsize flex align-items-center pad-center"><h1 class="header">Переходим к практике...</h1></div><aside class="notes"><p>Мы только что обсудили инструмент, который позволяет
 кардинально упростить реализацию программ определённой структуры.
-Тем не менее, если мы попробуем использовать его на практике,
-то обнаружим, что он полезен не так уж и часто. Вернее, нам будет казаться,
+Тем не менее, если попробовать применить его на практике,
+то окажется, что он полезен не так уж и часто. Вернее, будет казаться,
 что чего-то не хватает.</p><p>Продемонстируем проблему и её решение смоделировав разработку реального
 приложения.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript"><span class="fragment">app.def('response', (user) => <span class="inline-code">Hello ${user}!</span>)</span>
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript"><span class="fragment">app.def('response', (user) => `Hello ${user}!`)</span>
 
-<span class="fragment">app.def('user', (db, cookies) => db.getUser(cookies.user)))</span>
+<span class="fragment">app.def('user', (db, cookies) => db.getUser(cookies.user))</span>
 
-<span class="fragment">app.def('cookies', (req) => parse(req.headers['Cookie'])))</span>
+<span class="fragment">app.def('cookies', (req) => parse(req.headers['Cookie']))</span>
 
 <span class="fragment">app.def('db', (connString) => open(connString))
 
@@ -756,7 +758,7 @@ app.def('Response', function(db) {
 </p></aside></section><section><div class="fullsize flex align-items-center pad-center"><h1 class="header">Killer feature...</h1></div><aside class="notes"><p>Тот факт, что наш контейнер автоматически распределяет
 подзадачи по уровням и не накладывает никаких особых ограничений
 на возможный стек вызовов, является существенным преимуществом
-по сравнению с традиционными Java-контейнерами.</p><p>Мы попытаемся показать это на простом, но всё же жизненном примере.
+по сравнению с традиционными Java-контейнерами.</p><p>Мы попытаемся показать это на простом примере.
 
 </p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript"><span>app.def('jsonSpaces', () => process.ENV.production ? 0 : 2)
 
@@ -778,7 +780,8 @@ app.def('jsonSpaces', function(req) {
 нам пришлось бы кропотливо отслеживать все зависимости <span class="inline-code">jsonSpaces</span>
 и переносить их на другой уровень вручную.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Достижения</h1><ol><li class="mv2 fragment">Работали с фундаментальной структурой вычисления, а не терминами ООП</li><li class="mv2 fragment">Ввели понятие уровня</li><li class="mv2 fragment">Устранили Runtime потери на вызов подзадач</li><li class="mv2 fragment">Использовали простую структуру данных для их описания</li></ol></div></div><aside class="notes"><p>Прежде чем перейти к обсуждению реализации прототипа резюмируем наши достижения.</p><p><span class="arrow">&#x27f6</span> 1. Формулировка идеи DI и примеры API подчёркивали
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Достижения</h1><ol><li class="mv2 fragment">Работали с фундаментальной структурой вычисления, а не терминами ООП</li><li class="mv2 fragment">Ввели понятие уровня</li><li class="mv2 fragment">Устранили Runtime потери на вызов подзадач</li><li class="mv2 fragment">Использовали простую структуру данных для их описания</li></ol></div></div><aside class="notes"><p>Прежде чем перейти ко второй части доклада
+(обсуждению реализации прототипа) резюмируем наши достижения.</p><p><span class="arrow">&#x27f6</span> 1. Формулировка идеи DI и примеры API подчёркивали
 фундаментальную структуру алгоритма, а не термины ООП.</p><p><span class="arrow">&#x27f6</span> 2. Что позволило нам переосмылслить понятие уровня
 и существенно увеличить мощность паттерна.</p><p><span class="arrow">&#x27f6</span> 3. Собственно, мы ещё ничего не устранили,
 но эта цель игнорируется традиционными контейнерами,
@@ -808,12 +811,12 @@ app.def('jsonSpaces', function(req) {
 любая задача может стать асинхронной, а контейнер предоставляет
 хорошую возможность оградиться от каскада ненужных изменений.</p><p>И так, асинхронные операции...
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Замечания</h1><ol><li class="mv2 fragment">Вызов уровня всегда асинхронный</li><li class="mv2 fragment">Много других операций с async интерфейсом, но синхронным результатом</li></ol><div class="fragment"><div class="gray f2 mv2 text-align-center">&#x21D3</div><ol><li class="mv2">Нельзя использовать стандартный Promise API</li><li class="mv2 fragment">Необходима кастомная реализация async/await блоков</li></ol></div></div></div><aside class="notes"><p>Несколько замечаний...</p><p><span class="arrow">&#x27f6</span> 1. Мы вынуждены использовать для вызова уровня асинхронный API,
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Замечания по поводу асинхронности</h1><ol><li class="mv2 fragment">Вызов уровня всегда асинхронный</li><li class="mv2 fragment">Много операций с async интерфейсом, но синхронным результатом</li></ol><div class="fragment"><div class="gray f2 mv2 text-align-center">&#x21D3</div><ol><li class="mv2">Нельзя использовать стандартный Promise API</li><li class="mv2 fragment">Необходима кастомная реализация async/await блоков</li></ol></div></div></div><aside class="notes"><p>Несколько замечаний...</p><p><span class="arrow">&#x27f6</span> 1. Мы вынуждены использовать для вызова уровня асинхронный API,
 поскольку его истинная синхронность/асинхронность может легко поменяться,
 а мы не хотим, чтобы локальный код от этого зависел.</p><p><span class="arrow">&#x27f6</span> 2. Другим примером потенциально (а возможно и часто) синхронной операции
 с асинхронным интерфейсом является вызов асинхронной подзадачи нижележащего уровня.
 Такой вызов будет асинхронным только в первый раз,
-в последующие вызовы результат будет немедленно доступен.</p><p><span class="arrow">&#x27f6</span> Большое кол-во синхронных задач с асинхронным интерфейсом означает,
+в последующем результат будет немедленно доступен.</p><p><span class="arrow">&#x27f6</span> Большое кол-во синхронных задач с асинхронным интерфейсом означает,
 что мы не можем использовать Promise API.
 Действительно, стандартный Promise позволяет запросить результат только через event-loop,
 а это означает катострофу для производительности.</p><p><span class="arrow">&#x27f6</span> Точно таким же недостатком обладают и ES8 async функции.
@@ -862,4 +865,6 @@ app.def('jsonSpaces', function(req) {
 
 </p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Прототип</h1><div><a href="https://github.com/eldargab/easy-app">https://github.com/eldargab/easy-app</a></div></div></div><aside class="notes"><p>Изложенные в докладе идеи реализованы в проекте <span class="inline-code">easy-app</span>.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Спасибо за внимание!</h1></div></div><aside class="notes"><p>На этом всё, спасибо за внимание!</p></aside></section></div></div><script src="8cd5acbee5eafc060921f4c54bc6ef61.js"></script></body></html>
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Спасибо за внимание!</h1></div></div><aside class="notes"><p>На этом всё, спасибо за внимание!</p><p>P.S. Содержание второй части доклада может быть сильно
+изменено по мере готовности WEB-фреймворка на основе
+представленного контейнера.</p></aside></section></div></div><script src="8cd5acbee5eafc060921f4c54bc6ef61.js"></script></body></html>
