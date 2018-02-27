@@ -1,7 +1,7 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Dependency Injection: Расширяем область применения</title><link rel="stylesheet" type="text/css" href="4fabdc99a78b4bc9cb0768c324d8b040.css"><link rel="stylesheet" type="text/css" href="81411007409b3a3f512d26af03026dde.css"><link rel="stylesheet" type="text/css" href="c9497c71762a503e554cde78f564bb8a.css"></head><body><div class="reveal"><div class="slides"><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 fw-300 gray mb1">Dependency Injection</h1><p>Расширяем область применения</p></div></div><aside class="notes"><p>Символ <span class="arrow">&#x27f6</span> в комментариях означает,
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Dependency Injection: Расширяем область применения</title><link rel="stylesheet" type="text/css" href="4fabdc99a78b4bc9cb0768c324d8b040.css"><link rel="stylesheet" type="text/css" href="81411007409b3a3f512d26af03026dde.css"><link rel="stylesheet" type="text/css" href="c9497c71762a503e554cde78f564bb8a.css"></head><body><div class="reveal"><div class="slides"><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb1">Dependency Injection</h1><p>Расширяем область применения</p></div></div><aside class="notes"><p>Символ <span class="arrow">&#x27f6</span> в комментариях означает,
 что прежде чем читать дальше нужно открыть
 скрытый фрагмент слайда.
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 fw-300 gray mb3">Цели доклада</h1><ol><li class="mv2">Сформулировать ключевую идею лежащую в основе DI</li><li class="mv2">Представить новый контейнер</li><li class="mv2">Обсудить его реализацию</li></ol></div></div><aside class="notes"><p>В этом докладе мы хотим представить новый контейнер.
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Цели доклада</h1><ol><li class="mv2">Сформулировать ключевую идею лежащую в основе DI</li><li class="mv2">Представить новый контейнер</li><li class="mv2">Обсудить его реализацию</li></ol></div></div><aside class="notes"><p>В этом докладе мы хотим представить новый контейнер.
 Он весьма не похож на традиционные Java контейнеры
 и обладает важной особенностью, которая позволяет применять
 ключевую идею, лежащую в основе DI, более широко и с большим успехом.</p><p>С формулировки ключевой идеи DI мы и начнём...
@@ -553,7 +553,7 @@ result(1, 1) // => 13</code></pre><div class="example-graph ml4"><svg width="200
 принимает готовые значения <span class="inline-code">a</span> и <span class="inline-code">b</span>.</p><p>Заметьте, что наш код будет оставаться простым независимо
 от кол-ва элементарных операций и сложности их взаимозависимости.</p><p>Это и есть ключевая идея лежащая в основе DI.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><h1 class="f3 fw-300 gray">Переходим к практике...</h1></div><aside class="notes"><p>Мы только что обсудили инструмент, который позволяет
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><h1 class="header">Переходим к практике...</h1></div><aside class="notes"><p>Мы только что обсудили инструмент, который позволяет
 кардинально упростить реализацию программ определённой структуры.
 Тем не менее, если мы попробуем использовать его на практике,
 то обнаружим, что он полезен не так уж и часто. Вернее, нам будет казаться,
@@ -753,7 +753,7 @@ app.def('Response', function(db) {
 а так же те, которые должны быть определены ниже в стеке (<span class="inline-code">bar</span>)</p><p>// 3. Метод <span class="inline-code">main</span> вычисляет результат уровня.
 В целом методы <span class="inline-code">main</span> и <span class="inline-code">compute_*</span> компилируются обычным способом.</p><p>// 4. Демонстрация вызова дочернего уровня.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><h1 class="f3 gray fw-300">Killer feature...</h1></div><aside class="notes"><p>Тот факт, что наш контейнер автоматически распределяет
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><h1 class="header">Killer feature...</h1></div><aside class="notes"><p>Тот факт, что наш контейнер автоматически распределяет
 подзадачи по уровням и не накладывает никаких особых ограничений
 на возможный стек вызовов, является существенным преимуществом
 по сравнению с традиционными Java-контейнерами.</p><p>Мы попытаемся показать это на простом, но всё же жизненном примере.
@@ -778,7 +778,7 @@ app.def('jsonSpaces', function(req) {
 нам пришлось бы кропотливо отслеживать все зависимости <span class="inline-code">jsonSpaces</span>
 и переносить их на другой уровень вручную.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Достижения</h1><ol><li class="mv2 fragment">Работали с фундаментальной структурой вычисления, а не терминами ООП</li><li class="mv2 fragment">Ввели понятие уровня</li><li class="mv2 fragment">Устранили Runtime потери на вызов подзадач</li><li class="mv2 fragment">Использовали простую структуру данных для их описания</li></ol></div></div><aside class="notes"><p>Прежде чем перейти к обсуждению реализации прототипа резюмируем наши достижения.</p><p><span class="arrow">&#x27f6</span> 1. Формулировка идеи DI и примеры API подчёркивали
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Достижения</h1><ol><li class="mv2 fragment">Работали с фундаментальной структурой вычисления, а не терминами ООП</li><li class="mv2 fragment">Ввели понятие уровня</li><li class="mv2 fragment">Устранили Runtime потери на вызов подзадач</li><li class="mv2 fragment">Использовали простую структуру данных для их описания</li></ol></div></div><aside class="notes"><p>Прежде чем перейти к обсуждению реализации прототипа резюмируем наши достижения.</p><p><span class="arrow">&#x27f6</span> 1. Формулировка идеи DI и примеры API подчёркивали
 фундаментальную структуру алгоритма, а не термины ООП.</p><p><span class="arrow">&#x27f6</span> 2. Что позволило нам переосмылслить понятие уровня
 и существенно увеличить мощность паттерна.</p><p><span class="arrow">&#x27f6</span> 3. Собственно, мы ещё ничего не устранили,
 но эта цель игнорируется традиционными контейнерами,
@@ -797,18 +797,18 @@ app.def('jsonSpaces', function(req) {
 в совокупности и являются тем стоп-фактором,
 который мешает более широкому применению традиционных DI-контейнеров.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300">Реализация прототипа...</h1></div></div><aside class="notes"><p>В заключении мы обсудим решения
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header">Реализация прототипа...</h1></div></div><aside class="notes"><p>В заключении мы обсудим решения
 принятые при разработке прототипа,
 но ограничимся только вопросом производительности.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">How to build zero overhead runtime?</h1><ol><li class="mv2 fragment">Use code generation</li><li class="mv2 fragment">Support async operations in a clever way</li></ol></div></div><aside class="notes"><p><span class="arrow">&#x27f6</span> 1. Стремление к zero overhead RT означает, что мы должны
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">How to build zero overhead runtime?</h1><ol><li class="mv2 fragment">Use code generation</li><li class="mv2 fragment">Support async operations in a clever way</li></ol></div></div><aside class="notes"><p><span class="arrow">&#x27f6</span> 1. Стремление к zero overhead RT означает, что мы должны
 избегать динамических вызовов функций и доступов
 используя кодо-генерацию.</p><p><span class="arrow">&#x27f6</span> 2. В случаи с JavaScript мы не можем обойтись без встроенной
 поддержки асинхронных операций. Действительно, в любой момент,
 любая задача может стать асинхронной, а контейнер предоставляет
 хорошую возможность оградиться от каскада ненужных изменений.</p><p>И так, асинхронные операции...
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Замечания</h1><ol><li class="mv2 fragment">Вызов уровня всегда асинхронный</li><li class="mv2 fragment">Много других операций с async интерфейсом, но синхронным результатом</li></ol><div class="fragment"><div class="gray f2 mv2 text-align-center">&#x21D3</div><ol><li class="mv2">Нельзя использовать стандартный Promise API</li><li class="mv2 fragment">Необходима кастомная реализация async/await блоков</li></ol></div></div></div><aside class="notes"><p>Несколько замечаний...</p><p><span class="arrow">&#x27f6</span> 1. Мы вынуждены использовать для вызова уровня асинхронный API,
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Замечания</h1><ol><li class="mv2 fragment">Вызов уровня всегда асинхронный</li><li class="mv2 fragment">Много других операций с async интерфейсом, но синхронным результатом</li></ol><div class="fragment"><div class="gray f2 mv2 text-align-center">&#x21D3</div><ol><li class="mv2">Нельзя использовать стандартный Promise API</li><li class="mv2 fragment">Необходима кастомная реализация async/await блоков</li></ol></div></div></div><aside class="notes"><p>Несколько замечаний...</p><p><span class="arrow">&#x27f6</span> 1. Мы вынуждены использовать для вызова уровня асинхронный API,
 поскольку его истинная синхронность/асинхронность может легко поменяться,
 а мы не хотим, чтобы локальный код от этого зависел.</p><p><span class="arrow">&#x27f6</span> 2. Другим примером потенциально (а возможно и часто) синхронной операции
 с асинхронным интерфейсом является вызов асинхронной подзадачи нижележащего уровня.
@@ -819,17 +819,17 @@ app.def('jsonSpaces', function(req) {
 а это означает катострофу для производительности.</p><p><span class="arrow">&#x27f6</span> Точно таким же недостатком обладают и ES8 async функции.
 Это может стать проблемой, если мы захотим их использовать для работы с уровнями.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Быстрые async/await блоки</h1><div><a href="https://github.com/eldargab/go-async">https://github.com/eldargab/go-async</a></div></div></div><aside class="notes"><p>Специально для решения ранее указанных проблем была разработана
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Быстрые async/await блоки</h1><div><a href="https://github.com/eldargab/go-async">https://github.com/eldargab/go-async</a></div></div></div><aside class="notes"><p>Специально для решения ранее указанных проблем была разработана
 библиотека <span class="inline-code">go-async</span>.</p><p>Синхронные вызовы в её async/await болках, основанных на генераторах,
 стоят примерно 30 - 100 наносекунд.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Async code generation variants</h1><ol><li class="mv2 fragment">Async/await блоки основанные на генераторах</li><li class="mv2 fragment">Комбинация кэширования и исключений</li><li class="mv2 fragment">Комбинация кэширования и проверок</li></ol></div></div><aside class="notes"><p>Прежде чем рассмотреть возможные варианты генерации асинхронного
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Async code generation variants</h1><ol><li class="mv2 fragment">Async/await блоки основанные на генераторах</li><li class="mv2 fragment">Комбинация кэширования и исключений</li><li class="mv2 fragment">Комбинация кэширования и проверок</li></ol></div></div><aside class="notes"><p>Прежде чем рассмотреть возможные варианты генерации асинхронного
 кода следует отметить, что мы могли бы сильно поднять производительность
 используя ручную аннотацию асинхронных операций. В прототипе от этого
 было решено отказаться.</p><p>И так варианты.</p><p><span class="arrow">&#x27f6</span> 1. Стоимость подзадачи 30..100 ns.</p><p><span class="arrow">&#x27f6</span> 2. Стоимость синхронной подзадачи 10 ns, асинхронной - 5 mcs.</p><p><span class="arrow">&#x27f6</span> 3. Стоимость синхронной подзадачи 15 ns, асинхронной - 100 ns.</p><p>Мы выберем второй вариант, поскольку настоящая асинхронная операция,
 уже сама по себе подразумевает серьёзную стоимость.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Вариант 2</h1><pre><code class="javascript" style="font-size: 0.6rem;">class LevelFoo {
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Вариант 2</h1><pre><code class="javascript" style="font-size: 0.6rem;">class LevelFoo {
   get_bar() { // Геттеры результатов подзадач
     return this._bar === undefined ? this.compute_bar() : this._bar
   }
@@ -860,6 +860,6 @@ app.def('jsonSpaces', function(req) {
 что вместо исключений используются явные сравнения
 промежуточных значений с <span class="inline-code">undefined</span>.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Прототип</h1><div><a href="https://github.com/eldargab/easy-app">https://github.com/eldargab/easy-app</a></div></div></div><aside class="notes"><p>Изложенные в докладе идеи реализованы в проекте <span class="inline-code">easy-app</span>.
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Прототип</h1><div><a href="https://github.com/eldargab/easy-app">https://github.com/eldargab/easy-app</a></div></div></div><aside class="notes"><p>Изложенные в докладе идеи реализованы в проекте <span class="inline-code">easy-app</span>.
 
-</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Спасибо за внимание!</h1></div></div><aside class="notes"><p>На этом всё, спасибо за внимание!</p></aside></section></div></div><script src="8cd5acbee5eafc060921f4c54bc6ef61.js"></script></body></html>
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="header mb3">Спасибо за внимание!</h1></div></div><aside class="notes"><p>На этом всё, спасибо за внимание!</p></aside></section></div></div><script src="8cd5acbee5eafc060921f4c54bc6ef61.js"></script></body></html>
