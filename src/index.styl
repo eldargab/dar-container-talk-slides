@@ -109,6 +109,10 @@ li {
 
 ol > li::before {
   content: counter(list-item);
+}
+
+
+li::before, span.number {
   font-weight: 600;
   color: var(--gray);
   padding-right: var(--space-2);
