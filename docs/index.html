@@ -1,0 +1,865 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Dependency Injection: Расширяем область применения</title><link rel="stylesheet" type="text/css" href="4fabdc99a78b4bc9cb0768c324d8b040.css"><link rel="stylesheet" type="text/css" href="81411007409b3a3f512d26af03026dde.css"><link rel="stylesheet" type="text/css" href="c9497c71762a503e554cde78f564bb8a.css"></head><body><div class="reveal"><div class="slides"><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 fw-300 gray mb1">Dependency Injection</h1><p>Расширяем область применения</p></div></div><aside class="notes"><p>Символ <span class="arrow">&#x27f6</span> в комментариях означает,
+что прежде чем читать дальше нужно открыть
+скрытый фрагмент слайда.
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 fw-300 gray mb3">Цели доклада</h1><ol><li class="mv2">Сформулировать ключевую идею лежащую в основе DI</li><li class="mv2">Представить новый контейнер</li><li class="mv2">Обсудить его реализацию</li></ol></div></div><aside class="notes"><p>В этом докладе мы хотим представить новый контейнер.
+Он весьма не похож на традиционные Java контейнеры
+и обладает важной особенностью, которая позволяет применять
+ключевую идею, лежащую в основе DI, более широко и с большим успехом.</p><p>С формулировки ключевой идеи DI мы и начнём...
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript">function abc() {
+  let ab = A() + B()
+  let c  = C()
+  return ab + c
+}</code></pre><div class="example-graph ml4"><svg width="170pt" height="195pt"
+ viewBox="0.00 0.00 170.00 194.92" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 190.9242)">
+<title>abc</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-190.9242 166,-190.9242 166,4 -4,4"/>
+<!-- abc -->
+<g id="node1" class="node">
+<title>abc</title>
+<ellipse fill="none" stroke="#000000" cx="99" cy="-167.7702" rx="30.3483" ry="19.3093"/>
+<text text-anchor="middle" x="99" y="-164.5141" font-family="Helvetica Neue" font-size="16.00" fill="#000000">abc</text>
+</g>
+<!-- ab -->
+<g id="node2" class="node">
+<title>ab</title>
+<ellipse fill="none" stroke="#000000" cx="63" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="63" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">ab</text>
+</g>
+<!-- abc&#45;&gt;ab -->
+<g id="edge1" class="edge">
+<title>abc&#45;&gt;ab</title>
+<path fill="none" stroke="#000000" d="M90.1011,-149.4019C85.916,-140.7633 80.8401,-130.286 76.2178,-120.7451"/>
+<polygon fill="#000000" stroke="#000000" points="79.3064,-119.0926 71.7965,-111.6191 73.0067,-122.1446 79.3064,-119.0926"/>
+</g>
+<!-- C -->
+<g id="node3" class="node">
+<title>C</title>
+<ellipse fill="none" stroke="#000000" cx="135" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="135" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">C</text>
+</g>
+<!-- abc&#45;&gt;C -->
+<g id="edge2" class="edge">
+<title>abc&#45;&gt;C</title>
+<path fill="none" stroke="#000000" d="M107.8989,-149.4019C112.084,-140.7633 117.1599,-130.286 121.7822,-120.7451"/>
+<polygon fill="#000000" stroke="#000000" points="124.9933,-122.1446 126.2035,-111.6191 118.6936,-119.0926 124.9933,-122.1446"/>
+</g>
+<!-- A -->
+<g id="node4" class="node">
+<title>A</title>
+<ellipse fill="none" stroke="#000000" cx="27" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="27" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">A</text>
+</g>
+<!-- ab&#45;&gt;A -->
+<g id="edge3" class="edge">
+<title>ab&#45;&gt;A</title>
+<path fill="none" stroke="#000000" d="M54.1011,-75.0938C49.916,-66.4552 44.8401,-55.978 40.2178,-46.4371"/>
+<polygon fill="#000000" stroke="#000000" points="43.3064,-44.7845 35.7965,-37.311 37.0067,-47.8365 43.3064,-44.7845"/>
+</g>
+<!-- B -->
+<g id="node5" class="node">
+<title>B</title>
+<ellipse fill="none" stroke="#000000" cx="99" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="99" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">B</text>
+</g>
+<!-- ab&#45;&gt;B -->
+<g id="edge4" class="edge">
+<title>ab&#45;&gt;B</title>
+<path fill="none" stroke="#000000" d="M71.8989,-75.0938C76.084,-66.4552 81.1599,-55.978 85.7822,-46.4371"/>
+<polygon fill="#000000" stroke="#000000" points="88.9933,-47.8365 90.2035,-37.311 82.6936,-44.7845 88.9933,-47.8365"/>
+</g>
+</g>
+</svg>
+</div></div><aside class="notes"><p>Для этого посмотрим на наш код не как на некую последовательность действий,
+а как на граф, вершины которого обозначают элементарные операции,
+а рёбра их непосредственную зависимость друг от друга.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div class="example-graph"><svg width="355pt" height="269pt"
+ viewBox="0.00 0.00 355.00 269.23" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 265.2322)">
+<title>simple</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-265.2322 351,-265.2322 351,4 -4,4"/>
+<!-- ab -->
+<g id="node1" class="node">
+<title>ab</title>
+<ellipse fill="none" stroke="#000000" cx="99" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="99" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">ab</text>
+</g>
+<!-- a -->
+<g id="node2" class="node">
+<title>a</title>
+<ellipse fill="none" stroke="#000000" cx="27" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="27" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">a</text>
+</g>
+<!-- ab&#45;&gt;a -->
+<g id="edge1" class="edge">
+<title>ab&#45;&gt;a</title>
+<path fill="none" stroke="#000000" d="M83.3771,-77.3384C73.4975,-67.142 60.5649,-53.7949 49.5786,-42.4564"/>
+<polygon fill="#000000" stroke="#000000" points="51.8174,-39.7372 42.3451,-34.991 46.7902,-44.6083 51.8174,-39.7372"/>
+</g>
+<!-- b -->
+<g id="node3" class="node">
+<title>b</title>
+<ellipse fill="none" stroke="#000000" cx="99" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="99" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">b</text>
+</g>
+<!-- ab&#45;&gt;b -->
+<g id="edge2" class="edge">
+<title>ab&#45;&gt;b</title>
+<path fill="none" stroke="#000000" d="M99,-73.9385C99,-66.2589 99,-57.2711 99,-48.8221"/>
+<polygon fill="#000000" stroke="#000000" points="102.5001,-48.5472 99,-38.5472 95.5001,-48.5472 102.5001,-48.5472"/>
+</g>
+<!-- cd -->
+<g id="node4" class="node">
+<title>cd</title>
+<ellipse fill="none" stroke="#000000" cx="171" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="171" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">cd</text>
+</g>
+<!-- c -->
+<g id="node5" class="node">
+<title>c</title>
+<ellipse fill="none" stroke="#000000" cx="171" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="171" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">c</text>
+</g>
+<!-- cd&#45;&gt;c -->
+<g id="edge3" class="edge">
+<title>cd&#45;&gt;c</title>
+<path fill="none" stroke="#000000" d="M171,-73.9385C171,-66.2589 171,-57.2711 171,-48.8221"/>
+<polygon fill="#000000" stroke="#000000" points="174.5001,-48.5472 171,-38.5472 167.5001,-48.5472 174.5001,-48.5472"/>
+</g>
+<!-- d -->
+<g id="node6" class="node">
+<title>d</title>
+<ellipse fill="none" stroke="#000000" cx="243" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="243" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">d</text>
+</g>
+<!-- cd&#45;&gt;d -->
+<g id="edge4" class="edge">
+<title>cd&#45;&gt;d</title>
+<path fill="none" stroke="#000000" d="M186.6229,-77.3384C196.5025,-67.142 209.4351,-53.7949 220.4214,-42.4564"/>
+<polygon fill="#000000" stroke="#000000" points="223.2098,-44.6083 227.6549,-34.991 218.1826,-39.7372 223.2098,-44.6083"/>
+</g>
+<!-- abcd -->
+<g id="node7" class="node">
+<title>abcd</title>
+<ellipse fill="none" stroke="#000000" cx="168" cy="-167.7702" rx="36.7658" ry="19.3093"/>
+<text text-anchor="middle" x="168" y="-164.5141" font-family="Helvetica Neue" font-size="16.00" fill="#000000">abcd</text>
+</g>
+<!-- abcd&#45;&gt;ab -->
+<g id="edge5" class="edge">
+<title>abcd&#45;&gt;ab</title>
+<path fill="none" stroke="#000000" d="M151.648,-150.1602C142.4764,-140.2831 130.9127,-127.8298 120.9605,-117.112"/>
+<polygon fill="#000000" stroke="#000000" points="123.4251,-114.6225 114.0557,-109.6761 118.2955,-119.3856 123.4251,-114.6225"/>
+</g>
+<!-- abcd&#45;&gt;cd -->
+<g id="edge6" class="edge">
+<title>abcd&#45;&gt;cd</title>
+<path fill="none" stroke="#000000" d="M168.7882,-148.2466C169.1017,-140.4817 169.4692,-131.3793 169.8136,-122.8487"/>
+<polygon fill="#000000" stroke="#000000" points="173.3107,-122.9884 170.217,-112.8553 166.3164,-122.7059 173.3107,-122.9884"/>
+</g>
+<!-- xy -->
+<g id="node8" class="node">
+<title>xy</title>
+<ellipse fill="none" stroke="#000000" cx="250" cy="-167.7702" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="250" y="-164.5141" font-family="Helvetica Neue" font-size="16.00" fill="#000000">xy</text>
+</g>
+<!-- x -->
+<g id="node9" class="node">
+<title>x</title>
+<ellipse fill="none" stroke="#000000" cx="248" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="248" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">x</text>
+</g>
+<!-- xy&#45;&gt;x -->
+<g id="edge7" class="edge">
+<title>xy&#45;&gt;x</title>
+<path fill="none" stroke="#000000" d="M249.4745,-148.2466C249.2678,-140.567 249.0259,-131.5792 248.7985,-123.1301"/>
+<polygon fill="#000000" stroke="#000000" points="252.2898,-122.7574 248.522,-112.8553 245.2924,-122.9459 252.2898,-122.7574"/>
+</g>
+<!-- y -->
+<g id="node10" class="node">
+<title>y</title>
+<ellipse fill="none" stroke="#000000" cx="320" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="320" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">y</text>
+</g>
+<!-- xy&#45;&gt;y -->
+<g id="edge8" class="edge">
+<title>xy&#45;&gt;y</title>
+<path fill="none" stroke="#000000" d="M265.189,-151.6464C274.7288,-141.5195 287.1965,-128.2844 297.8303,-116.9962"/>
+<polygon fill="#000000" stroke="#000000" points="300.5314,-119.2332 304.8407,-109.5544 295.4361,-114.4334 300.5314,-119.2332"/>
+</g>
+<!-- result -->
+<g id="node11" class="node">
+<title>result</title>
+<ellipse fill="none" stroke="#000000" cx="209" cy="-242.0782" rx="38.9515" ry="19.3093"/>
+<text text-anchor="middle" x="209" y="-238.8222" font-family="Helvetica Neue" font-size="16.00" fill="#000000">result</text>
+</g>
+<!-- result&#45;&gt;abcd -->
+<g id="edge9" class="edge">
+<title>result&#45;&gt;abcd</title>
+<path fill="none" stroke="#000000" d="M198.654,-223.3272C193.9569,-214.8143 188.3084,-204.5769 183.1468,-195.222"/>
+<polygon fill="#000000" stroke="#000000" points="186.0962,-193.3226 178.2007,-186.2578 179.9673,-196.7043 186.0962,-193.3226"/>
+</g>
+<!-- result&#45;&gt;xy -->
+<g id="edge10" class="edge">
+<title>result&#45;&gt;xy</title>
+<path fill="none" stroke="#000000" d="M219.346,-223.3272C224.1143,-214.6853 229.863,-204.2663 235.0875,-194.7974"/>
+<polygon fill="#000000" stroke="#000000" points="238.315,-196.1927 240.0816,-185.7462 232.1861,-192.811 238.315,-196.1927"/>
+</g>
+</g>
+</svg>
+</div><pre class="ml5 fragment" style="padding-top: 3%;"><code class="javascript">function result() {
+  return abcd() + xy()
+}
+
+function abcd() {
+  return ab() + cd()
+}
+
+function ab() {
+  return a() + b()
+}
+
+function cd() {
+  return c() + d()
+}
+
+function xy() {
+  return x() + y()
+}</code></pre></div><aside class="notes"><p>В самом оптимистичном случае такой граф будет представлять собой дерево.</p><p>Дерево замечательно тем, что для его реализации достаточно самых базовых
+приёмов программирования.</p><p>Действительно, если операций станет слишком много,
+мы всегда сможем разбить их на отдельные подпрограммы, каждая из которых будет
+оставаться простой. <span class="arrow">&#x27f6</span>
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript">let result = abcd + xy
+let abcd = ab + b
+let ab = a + b
+let xy = abcd + x
+let x = cd + d
+let cd = b + a
+let d = ab + abcd</code></pre><div class="example-graph ml4 fragment"><svg width="200pt" height="492pt"
+ viewBox="0.00 0.00 199.98 492.16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 488.1564)">
+<title>complex</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-488.1564 195.9757,-488.1564 195.9757,4 -4,4"/>
+<!-- result -->
+<g id="node1" class="node">
+<title>result</title>
+<ellipse fill="none" stroke="#000000" cx="38.9757" cy="-465.0024" rx="38.9515" ry="19.3093"/>
+<text text-anchor="middle" x="38.9757" y="-461.7464" font-family="Helvetica Neue" font-size="16.00" fill="#000000">result</text>
+</g>
+<!-- abcd -->
+<g id="node2" class="node">
+<title>abcd</title>
+<ellipse fill="none" stroke="#000000" cx="39.9757" cy="-167.7702" rx="36.7658" ry="19.3093"/>
+<text text-anchor="middle" x="39.9757" y="-164.5141" font-family="Helvetica Neue" font-size="16.00" fill="#000000">abcd</text>
+</g>
+<!-- result&#45;&gt;abcd -->
+<g id="edge1" class="edge">
+<title>result&#45;&gt;abcd</title>
+<path fill="none" stroke="#000000" d="M35.4769,-445.6778C33.743,-435.1291 31.8391,-421.815 30.9757,-409.8484 25.4423,-333.1509 32.4041,-242.5235 36.8351,-196.9892"/>
+<polygon fill="#000000" stroke="#000000" points="40.3277,-197.2374 37.8442,-186.9377 33.3627,-196.538 40.3277,-197.2374"/>
+</g>
+<!-- xy -->
+<g id="node3" class="node">
+<title>xy</title>
+<ellipse fill="none" stroke="#000000" cx="66.9757" cy="-390.6943" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="66.9757" y="-387.4383" font-family="Helvetica Neue" font-size="16.00" fill="#000000">xy</text>
+</g>
+<!-- result&#45;&gt;xy -->
+<g id="edge2" class="edge">
+<title>result&#45;&gt;xy</title>
+<path fill="none" stroke="#000000" d="M46.1864,-445.8662C49.3041,-437.5924 53.0144,-427.7457 56.4317,-418.6766"/>
+<polygon fill="#000000" stroke="#000000" points="59.732,-419.8441 59.9829,-409.2522 53.1816,-417.3758 59.732,-419.8441"/>
+</g>
+<!-- ab -->
+<g id="node4" class="node">
+<title>ab</title>
+<ellipse fill="none" stroke="#000000" cx="92.9757" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="92.9757" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">ab</text>
+</g>
+<!-- abcd&#45;&gt;ab -->
+<g id="edge3" class="edge">
+<title>abcd&#45;&gt;ab</title>
+<path fill="none" stroke="#000000" d="M52.8055,-149.7822C59.4114,-140.5206 67.5778,-129.0709 74.8188,-118.9188"/>
+<polygon fill="#000000" stroke="#000000" points="77.6716,-120.9464 80.629,-110.7727 71.9727,-116.8816 77.6716,-120.9464"/>
+</g>
+<!-- b -->
+<g id="node5" class="node">
+<title>b</title>
+<ellipse fill="none" stroke="#000000" cx="92.9757" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="92.9757" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">b</text>
+</g>
+<!-- abcd&#45;&gt;b -->
+<g id="edge4" class="edge">
+<title>abcd&#45;&gt;b</title>
+<path fill="none" stroke="#000000" d="M41.2347,-148.54C43.0108,-129.2022 47.21,-98.8221 56.9757,-74.3081 61.1447,-63.843 67.4363,-53.2646 73.5995,-44.2098"/>
+<polygon fill="#000000" stroke="#000000" points="76.4587,-46.2284 79.3956,-36.0488 70.7516,-42.1751 76.4587,-46.2284"/>
+</g>
+<!-- xy&#45;&gt;abcd -->
+<g id="edge7" class="edge">
+<title>xy&#45;&gt;abcd</title>
+<path fill="none" stroke="#000000" d="M64.6269,-371.3013C59.8777,-332.0896 49.1105,-243.1906 43.5095,-196.9462"/>
+<polygon fill="#000000" stroke="#000000" points="46.977,-196.4663 42.2999,-186.9597 40.0278,-197.308 46.977,-196.4663"/>
+</g>
+<!-- x -->
+<g id="node7" class="node">
+<title>x</title>
+<ellipse fill="none" stroke="#000000" cx="104.9757" cy="-316.3863" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="104.9757" y="-313.1302" font-family="Helvetica Neue" font-size="16.00" fill="#000000">x</text>
+</g>
+<!-- xy&#45;&gt;x -->
+<g id="edge8" class="edge">
+<title>xy&#45;&gt;x</title>
+<path fill="none" stroke="#000000" d="M76.369,-372.3261C80.7866,-363.6875 86.1445,-353.2102 91.0236,-343.6693"/>
+<polygon fill="#000000" stroke="#000000" points="94.2536,-345.0402 95.6905,-334.5433 88.0212,-341.8531 94.2536,-345.0402"/>
+</g>
+<!-- ab&#45;&gt;b -->
+<g id="edge5" class="edge">
+<title>ab&#45;&gt;b</title>
+<path fill="none" stroke="#000000" d="M92.9757,-73.9385C92.9757,-66.2589 92.9757,-57.2711 92.9757,-48.8221"/>
+<polygon fill="#000000" stroke="#000000" points="96.4758,-48.5472 92.9757,-38.5472 89.4758,-48.5472 96.4758,-48.5472"/>
+</g>
+<!-- a -->
+<g id="node6" class="node">
+<title>a</title>
+<ellipse fill="none" stroke="#000000" cx="164.9757" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="164.9757" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">a</text>
+</g>
+<!-- ab&#45;&gt;a -->
+<g id="edge6" class="edge">
+<title>ab&#45;&gt;a</title>
+<path fill="none" stroke="#000000" d="M108.5987,-77.3384C118.4783,-67.142 131.4108,-53.7949 142.3971,-42.4564"/>
+<polygon fill="#000000" stroke="#000000" points="145.1856,-44.6083 149.6306,-34.991 140.1583,-39.7372 145.1856,-44.6083"/>
+</g>
+<!-- cd -->
+<g id="node8" class="node">
+<title>cd</title>
+<ellipse fill="none" stroke="#000000" cx="164.9757" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="164.9757" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">cd</text>
+</g>
+<!-- x&#45;&gt;cd -->
+<g id="edge9" class="edge">
+<title>x&#45;&gt;cd</title>
+<path fill="none" stroke="#000000" d="M118.7464,-299.5654C126.535,-289.1488 135.7366,-275.1434 140.9757,-261.2322 158.3806,-215.0182 163.2797,-157.2894 164.5897,-123.008"/>
+<polygon fill="#000000" stroke="#000000" points="168.0961,-122.8472 164.9003,-112.7459 161.0993,-122.6354 168.0961,-122.8472"/>
+</g>
+<!-- d -->
+<g id="node9" class="node">
+<title>d</title>
+<ellipse fill="none" stroke="#000000" cx="104.9757" cy="-242.0782" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="104.9757" y="-238.8222" font-family="Helvetica Neue" font-size="16.00" fill="#000000">d</text>
+</g>
+<!-- x&#45;&gt;d -->
+<g id="edge10" class="edge">
+<title>x&#45;&gt;d</title>
+<path fill="none" stroke="#000000" d="M104.9757,-296.8627C104.9757,-289.1831 104.9757,-280.1953 104.9757,-271.7463"/>
+<polygon fill="#000000" stroke="#000000" points="108.4758,-271.4714 104.9757,-261.4714 101.4758,-271.4714 108.4758,-271.4714"/>
+</g>
+<!-- cd&#45;&gt;b -->
+<g id="edge11" class="edge">
+<title>cd&#45;&gt;b</title>
+<path fill="none" stroke="#000000" d="M149.3528,-77.3384C139.4732,-67.142 126.5406,-53.7949 115.5543,-42.4564"/>
+<polygon fill="#000000" stroke="#000000" points="117.7931,-39.7372 108.3208,-34.991 112.7659,-44.6083 117.7931,-39.7372"/>
+</g>
+<!-- cd&#45;&gt;a -->
+<g id="edge12" class="edge">
+<title>cd&#45;&gt;a</title>
+<path fill="none" stroke="#000000" d="M164.9757,-73.9385C164.9757,-66.2589 164.9757,-57.2711 164.9757,-48.8221"/>
+<polygon fill="#000000" stroke="#000000" points="168.4758,-48.5472 164.9757,-38.5472 161.4758,-48.5472 168.4758,-48.5472"/>
+</g>
+<!-- d&#45;&gt;abcd -->
+<g id="edge13" class="edge">
+<title>d&#45;&gt;abcd</title>
+<path fill="none" stroke="#000000" d="M90.5501,-225.5869C82.1231,-215.9531 71.3189,-203.6017 61.8617,-192.7902"/>
+<polygon fill="#000000" stroke="#000000" points="64.485,-190.4732 55.2667,-185.2508 59.2163,-195.0819 64.485,-190.4732"/>
+</g>
+<!-- d&#45;&gt;ab -->
+<g id="edge14" class="edge">
+<title>d&#45;&gt;ab</title>
+<path fill="none" stroke="#000000" d="M103.4315,-222.9535C101.3906,-197.6781 97.7741,-152.8884 95.3755,-123.1829"/>
+<polygon fill="#000000" stroke="#000000" points="98.8457,-122.6712 94.5521,-112.9853 91.8684,-123.2346 98.8457,-122.6712"/>
+</g>
+</g>
+</svg>
+</div></div><aside class="notes"><p>Посмортим, что будет в более сложном случае.
+Для этого рассмотрим псевдо-код на слайде.</p><p>С математической точки зрения спецификация проста и понятна,
+но насколько легко вы сможете расставить эти выражения в правильном
+порядке? А если таких выражений будет 100 или 1000?
+Для данного конкретного примера правильный порядок подскажет граф слева. <span class="arrow">&#x27f6</span></p><p>Что интересно, единственно как мы можем запрограммировать такой граф, это
+кропотливо записать элементарные операции в едином монолитном куске кода.
+Действительно, любая попытка разбить его на отдельные подпрограммы
+приведёт только к усложнению, а небольшие изменения в требованиях
+могут разрушить всю концепцию отдельно взятого разбиения.</p><p>Естественно, мы можем не программировать порядок вручную.
+Приведём пример того, как это может выглядеть...
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript">app.def('result', (abcd, xy) => abcd + xy)
+app.def('abcd', (ab, b) => ab + b)
+app.def('ab', (a, b) => a + b)
+app.def('xy', (abcd, x) => abcd + x)
+app.def('x', (cd, d) => cd + d)
+app.def('cd', (b, a) => b + a)
+app.def('d', (ab, abcd) => ab + abcd)
+
+let result = app.compile('result', ['a', 'b'])
+result(1, 1) // => 13</code></pre><div class="example-graph ml4"><svg width="200pt" height="492pt"
+ viewBox="0.00 0.00 199.98 492.16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 488.1564)">
+<title>complex</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-488.1564 195.9757,-488.1564 195.9757,4 -4,4"/>
+<!-- result -->
+<g id="node1" class="node">
+<title>result</title>
+<ellipse fill="none" stroke="#000000" cx="38.9757" cy="-465.0024" rx="38.9515" ry="19.3093"/>
+<text text-anchor="middle" x="38.9757" y="-461.7464" font-family="Helvetica Neue" font-size="16.00" fill="#000000">result</text>
+</g>
+<!-- abcd -->
+<g id="node2" class="node">
+<title>abcd</title>
+<ellipse fill="none" stroke="#000000" cx="39.9757" cy="-167.7702" rx="36.7658" ry="19.3093"/>
+<text text-anchor="middle" x="39.9757" y="-164.5141" font-family="Helvetica Neue" font-size="16.00" fill="#000000">abcd</text>
+</g>
+<!-- result&#45;&gt;abcd -->
+<g id="edge1" class="edge">
+<title>result&#45;&gt;abcd</title>
+<path fill="none" stroke="#000000" d="M35.4769,-445.6778C33.743,-435.1291 31.8391,-421.815 30.9757,-409.8484 25.4423,-333.1509 32.4041,-242.5235 36.8351,-196.9892"/>
+<polygon fill="#000000" stroke="#000000" points="40.3277,-197.2374 37.8442,-186.9377 33.3627,-196.538 40.3277,-197.2374"/>
+</g>
+<!-- xy -->
+<g id="node3" class="node">
+<title>xy</title>
+<ellipse fill="none" stroke="#000000" cx="66.9757" cy="-390.6943" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="66.9757" y="-387.4383" font-family="Helvetica Neue" font-size="16.00" fill="#000000">xy</text>
+</g>
+<!-- result&#45;&gt;xy -->
+<g id="edge2" class="edge">
+<title>result&#45;&gt;xy</title>
+<path fill="none" stroke="#000000" d="M46.1864,-445.8662C49.3041,-437.5924 53.0144,-427.7457 56.4317,-418.6766"/>
+<polygon fill="#000000" stroke="#000000" points="59.732,-419.8441 59.9829,-409.2522 53.1816,-417.3758 59.732,-419.8441"/>
+</g>
+<!-- ab -->
+<g id="node4" class="node">
+<title>ab</title>
+<ellipse fill="none" stroke="#000000" cx="92.9757" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="92.9757" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">ab</text>
+</g>
+<!-- abcd&#45;&gt;ab -->
+<g id="edge3" class="edge">
+<title>abcd&#45;&gt;ab</title>
+<path fill="none" stroke="#000000" d="M52.8055,-149.7822C59.4114,-140.5206 67.5778,-129.0709 74.8188,-118.9188"/>
+<polygon fill="#000000" stroke="#000000" points="77.6716,-120.9464 80.629,-110.7727 71.9727,-116.8816 77.6716,-120.9464"/>
+</g>
+<!-- b -->
+<g id="node5" class="node">
+<title>b</title>
+<ellipse fill="none" stroke="#000000" cx="92.9757" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="92.9757" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">b</text>
+</g>
+<!-- abcd&#45;&gt;b -->
+<g id="edge4" class="edge">
+<title>abcd&#45;&gt;b</title>
+<path fill="none" stroke="#000000" d="M41.2347,-148.54C43.0108,-129.2022 47.21,-98.8221 56.9757,-74.3081 61.1447,-63.843 67.4363,-53.2646 73.5995,-44.2098"/>
+<polygon fill="#000000" stroke="#000000" points="76.4587,-46.2284 79.3956,-36.0488 70.7516,-42.1751 76.4587,-46.2284"/>
+</g>
+<!-- xy&#45;&gt;abcd -->
+<g id="edge7" class="edge">
+<title>xy&#45;&gt;abcd</title>
+<path fill="none" stroke="#000000" d="M64.6269,-371.3013C59.8777,-332.0896 49.1105,-243.1906 43.5095,-196.9462"/>
+<polygon fill="#000000" stroke="#000000" points="46.977,-196.4663 42.2999,-186.9597 40.0278,-197.308 46.977,-196.4663"/>
+</g>
+<!-- x -->
+<g id="node7" class="node">
+<title>x</title>
+<ellipse fill="none" stroke="#000000" cx="104.9757" cy="-316.3863" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="104.9757" y="-313.1302" font-family="Helvetica Neue" font-size="16.00" fill="#000000">x</text>
+</g>
+<!-- xy&#45;&gt;x -->
+<g id="edge8" class="edge">
+<title>xy&#45;&gt;x</title>
+<path fill="none" stroke="#000000" d="M76.369,-372.3261C80.7866,-363.6875 86.1445,-353.2102 91.0236,-343.6693"/>
+<polygon fill="#000000" stroke="#000000" points="94.2536,-345.0402 95.6905,-334.5433 88.0212,-341.8531 94.2536,-345.0402"/>
+</g>
+<!-- ab&#45;&gt;b -->
+<g id="edge5" class="edge">
+<title>ab&#45;&gt;b</title>
+<path fill="none" stroke="#000000" d="M92.9757,-73.9385C92.9757,-66.2589 92.9757,-57.2711 92.9757,-48.8221"/>
+<polygon fill="#000000" stroke="#000000" points="96.4758,-48.5472 92.9757,-38.5472 89.4758,-48.5472 96.4758,-48.5472"/>
+</g>
+<!-- a -->
+<g id="node6" class="node">
+<title>a</title>
+<ellipse fill="none" stroke="#000000" cx="164.9757" cy="-19.154" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="164.9757" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">a</text>
+</g>
+<!-- ab&#45;&gt;a -->
+<g id="edge6" class="edge">
+<title>ab&#45;&gt;a</title>
+<path fill="none" stroke="#000000" d="M108.5987,-77.3384C118.4783,-67.142 131.4108,-53.7949 142.3971,-42.4564"/>
+<polygon fill="#000000" stroke="#000000" points="145.1856,-44.6083 149.6306,-34.991 140.1583,-39.7372 145.1856,-44.6083"/>
+</g>
+<!-- cd -->
+<g id="node8" class="node">
+<title>cd</title>
+<ellipse fill="none" stroke="#000000" cx="164.9757" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="164.9757" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">cd</text>
+</g>
+<!-- x&#45;&gt;cd -->
+<g id="edge9" class="edge">
+<title>x&#45;&gt;cd</title>
+<path fill="none" stroke="#000000" d="M118.7464,-299.5654C126.535,-289.1488 135.7366,-275.1434 140.9757,-261.2322 158.3806,-215.0182 163.2797,-157.2894 164.5897,-123.008"/>
+<polygon fill="#000000" stroke="#000000" points="168.0961,-122.8472 164.9003,-112.7459 161.0993,-122.6354 168.0961,-122.8472"/>
+</g>
+<!-- d -->
+<g id="node9" class="node">
+<title>d</title>
+<ellipse fill="none" stroke="#000000" cx="104.9757" cy="-242.0782" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="104.9757" y="-238.8222" font-family="Helvetica Neue" font-size="16.00" fill="#000000">d</text>
+</g>
+<!-- x&#45;&gt;d -->
+<g id="edge10" class="edge">
+<title>x&#45;&gt;d</title>
+<path fill="none" stroke="#000000" d="M104.9757,-296.8627C104.9757,-289.1831 104.9757,-280.1953 104.9757,-271.7463"/>
+<polygon fill="#000000" stroke="#000000" points="108.4758,-271.4714 104.9757,-261.4714 101.4758,-271.4714 108.4758,-271.4714"/>
+</g>
+<!-- cd&#45;&gt;b -->
+<g id="edge11" class="edge">
+<title>cd&#45;&gt;b</title>
+<path fill="none" stroke="#000000" d="M149.3528,-77.3384C139.4732,-67.142 126.5406,-53.7949 115.5543,-42.4564"/>
+<polygon fill="#000000" stroke="#000000" points="117.7931,-39.7372 108.3208,-34.991 112.7659,-44.6083 117.7931,-39.7372"/>
+</g>
+<!-- cd&#45;&gt;a -->
+<g id="edge12" class="edge">
+<title>cd&#45;&gt;a</title>
+<path fill="none" stroke="#000000" d="M164.9757,-73.9385C164.9757,-66.2589 164.9757,-57.2711 164.9757,-48.8221"/>
+<polygon fill="#000000" stroke="#000000" points="168.4758,-48.5472 164.9757,-38.5472 161.4758,-48.5472 168.4758,-48.5472"/>
+</g>
+<!-- d&#45;&gt;abcd -->
+<g id="edge13" class="edge">
+<title>d&#45;&gt;abcd</title>
+<path fill="none" stroke="#000000" d="M90.5501,-225.5869C82.1231,-215.9531 71.3189,-203.6017 61.8617,-192.7902"/>
+<polygon fill="#000000" stroke="#000000" points="64.485,-190.4732 55.2667,-185.2508 59.2163,-195.0819 64.485,-190.4732"/>
+</g>
+<!-- d&#45;&gt;ab -->
+<g id="edge14" class="edge">
+<title>d&#45;&gt;ab</title>
+<path fill="none" stroke="#000000" d="M103.4315,-222.9535C101.3906,-197.6781 97.7741,-152.8884 95.3755,-123.1829"/>
+<polygon fill="#000000" stroke="#000000" points="98.8457,-122.6712 94.5521,-112.9853 91.8684,-123.2346 98.8457,-122.6712"/>
+</g>
+</g>
+</svg>
+</div></div><aside class="notes"><p>В начале мы определим наши элементарные выражения обычным спрособом,
+а затем при помощи выражения <span class="inline-code">app.compile()</span> попросим контейнер
+скомпилировать функцию, которая возвращает <span class="inline-code">result</span>, а в качестве параметров
+принимает готовые значения <span class="inline-code">a</span> и <span class="inline-code">b</span>.</p><p>Заметьте, что наш код будет оставаться простым независимо
+от кол-ва элементарных операций и сложности их взаимозависимости.</p><p>Это и есть ключевая идея лежащая в основе DI.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><h1 class="f3 fw-300 gray">Переходим к практике...</h1></div><aside class="notes"><p>Мы только что обсудили инструмент, который позволяет
+кардинально упростить реализацию программ определённой структуры.
+Тем не менее, если мы попробуем использовать его на практике,
+то обнаружим, что он полезен не так уж и часто. Вернее, нам будет казаться,
+что чего-то не хватает.</p><p>Продемонстируем проблему и её решение смоделировав разработку реального
+приложения.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript"><span class="fragment">app.def('response', (user) => <span class="inline-code">Hello ${user}!</span>)</span>
+
+<span class="fragment">app.def('user', (db, cookies) => db.getUser(cookies.user)))</span>
+
+<span class="fragment">app.def('cookies', (req) => parse(req.headers['Cookie'])))</span>
+
+<span class="fragment">app.def('db', (connString) => open(connString))
+
+app.def('connString', () => process.ENV.DB_URL)</span>
+
+<span class="fragment">app.def('main', function(Response) {
+  http.createServer(function(req, res)) {
+    let msg = Response(req)
+    res.setHeader('Content-Type', 'text/plain');
+    res.end(msg);
+  })
+})
+</span></code></pre></div><aside class="notes"><p>Представим бэкэнд типичного WEB-приложения и начнём его определять.</p><p><span class="arrow">&#x27f6</span> Предположим, что всё, что нам нужно - это выводить текстовую страницу с приветсвием
+для текущего пользователя.</p><p><span class="arrow">&#x27f6</span> Информацию о пользователе мы будем подгружать из некой БД.</p><p><span class="arrow">&#x27f6</span> Cookies получаем разбором заголовка Cookie текущего запроса.</p><p><span class="arrow">&#x27f6</span> Обычным образом открываем соединение с БД.</p><p><span class="arrow">&#x27f6</span> Определяем сервер.</p><p>Как видим, для запуска приложения нам недостаёт только функции <span class="inline-code">Response</span>,
+которая должна принимать <span class="inline-code">req</span> и возвращать приветственную страницу,
+причём её полная спецификация в контейнере уже имеется.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript">let Response = app.compile('response', ['req', 'db'])
+
+app.def('Response', function(db) {
+  return req => Response(req, db)
+})</code></pre></div><aside class="notes"><p>Мы могли бы определить <span class="inline-code">Response</span> вручную,
+как это показано на данном слайде, но такой подход плохо масштабируется.</p><p>Действительно, в реальном приложении кол-во аргументов функции <span class="inline-code">Response</span>
+может достигать десятков и сотен, а их состав постоянно меняться.</p><p>Существуют и другие сложности, которые мы сейчас не будем обсуждать,
+потому что сразу перейдём к правильному решению.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript">app.level('Response', 'response', ['req']) // Уровень!</code></pre></div><aside class="notes"><p>При помощи выражения на слайде мы указали,
+что нам нужна функция <span class="inline-code">Response</span>,
+которая принимает в качестве аргумента готовое значение <span class="inline-code">req</span>
+и возвращает <span class="inline-code">response</span>. Определённую таким образом функцию мы
+будем называть уровнем.</p><p>Уровень является полноправным элементом графа.
+Т.е. его можно свободно использовать при определении
+других подзадач и даже вызывать рекурсивно.</p><p>Посмотрим как это работает...
+
+</p></aside></section><section><div class="fragment" data-state="highlight-req"></div><div class="fragment" data-state="highlight-dep"></div><div class="fullsize flex align-items-center pad-center"><div class="flex fullwidth"><div class="example-graph width-1of2"><svg width="232pt" height="269pt"
+ viewBox="0.00 0.00 231.92 269.23" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 265.2322)">
+<title>Response</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-265.2322 227.9159,-265.2322 227.9159,4 -4,4"/>
+<!-- response -->
+<g id="node1" class="node req">
+<title>response</title>
+<ellipse fill="none" stroke="#000000" cx="121.4228" cy="-242.0782" rx="57.6718" ry="19.3093"/>
+<text text-anchor="middle" x="121.4228" y="-238.8222" font-family="Helvetica Neue" font-size="16.00" fill="#000000">response</text>
+</g>
+<!-- user -->
+<g id="node2" class="node req">
+<title>user</title>
+<ellipse fill="none" stroke="#000000" cx="121.4228" cy="-167.7702" rx="33.2081" ry="19.3093"/>
+<text text-anchor="middle" x="121.4228" y="-164.5141" font-family="Helvetica Neue" font-size="16.00" fill="#000000">user</text>
+</g>
+<!-- response&#45;&gt;user -->
+<g id="edge1" class="edge req">
+<title>response&#45;&gt;user</title>
+<path fill="none" stroke="#000000" d="M121.4228,-222.5546C121.4228,-214.875 121.4228,-205.8872 121.4228,-197.4382"/>
+<polygon fill="#000000" stroke="#000000" points="124.9229,-197.1633 121.4228,-187.1633 117.9229,-197.1634 124.9229,-197.1633"/>
+</g>
+<!-- db -->
+<g id="node3" class="node dep">
+<title>db</title>
+<ellipse fill="none" stroke="#000000" cx="70.4228" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="70.4228" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">db</text>
+</g>
+<!-- user&#45;&gt;db -->
+<g id="edge2" class="edge dep">
+<title>user&#45;&gt;db</title>
+<path fill="none" stroke="#000000" d="M109.0771,-149.7822C102.7841,-140.6132 95.0193,-129.2997 88.1038,-119.2237"/>
+<polygon fill="#000000" stroke="#000000" points="90.8481,-117.037 82.3036,-110.7727 85.0767,-120.9982 90.8481,-117.037"/>
+</g>
+<!-- cookies -->
+<g id="node4" class="node req">
+<title>cookies</title>
+<ellipse fill="none" stroke="#000000" cx="173.4228" cy="-93.4621" rx="50.4862" ry="19.3093"/>
+<text text-anchor="middle" x="173.4228" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">cookies</text>
+</g>
+<!-- user&#45;&gt;cookies -->
+<g id="edge3" class="edge req">
+<title>user&#45;&gt;cookies</title>
+<path fill="none" stroke="#000000" d="M134.0105,-149.7822C140.1944,-140.9454 147.7723,-130.1167 154.6253,-120.3237"/>
+<polygon fill="#000000" stroke="#000000" points="157.542,-122.2602 160.4079,-112.0604 151.8068,-118.2468 157.542,-122.2602"/>
+</g>
+<!-- connString -->
+<g id="node6" class="node">
+<title>connString</title>
+<ellipse fill="none" stroke="#000000" cx="66.4228" cy="-19.154" rx="66.3457" ry="19.3093"/>
+<text text-anchor="middle" x="66.4228" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">connString</text>
+</g>
+<!-- db&#45;&gt;connString -->
+<g id="edge5" class="edge">
+<title>db&#45;&gt;connString</title>
+<path fill="none" stroke="#000000" d="M69.3718,-73.9385C68.9538,-66.1736 68.4639,-57.0712 68.0047,-48.5406"/>
+<polygon fill="#000000" stroke="#000000" points="71.4993,-48.3446 67.4667,-38.5472 64.5094,-48.7209 71.4993,-48.3446"/>
+</g>
+<!-- req -->
+<g id="node5" class="node req">
+<title>req</title>
+<ellipse fill="none" stroke="#000000" cx="178.4228" cy="-19.154" rx="27.825" ry="19.3093"/>
+<text text-anchor="middle" x="178.4228" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">req</text>
+</g>
+<!-- cookies&#45;&gt;req -->
+<g id="edge4" class="edge req">
+<title>cookies&#45;&gt;req</title>
+<path fill="none" stroke="#000000" d="M174.7365,-73.9385C175.2631,-66.1125 175.8811,-56.9278 176.459,-48.3392"/>
+<polygon fill="#000000" stroke="#000000" points="179.9558,-48.5026 177.1352,-38.2902 172.9716,-48.0326 179.9558,-48.5026"/>
+</g>
+</g>
+</svg>
+</div><div class="example-graph fragment"><svg width="141pt" height="269pt"
+ viewBox="0.00 0.00 140.85 269.23" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 265.2322)">
+<title>web</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-265.2322 136.8456,-265.2322 136.8456,4 -4,4"/>
+<!-- main -->
+<g id="node1" class="node">
+<title>main</title>
+<ellipse fill="none" stroke="#000000" cx="66.4228" cy="-242.0782" rx="35.6844" ry="19.3093"/>
+<text text-anchor="middle" x="66.4228" y="-238.8222" font-family="Helvetica Neue" font-size="16.00" fill="#000000">main</text>
+</g>
+<!-- Response -->
+<g id="node2" class="node">
+<title>Response</title>
+<ellipse fill="none" stroke="#000000" cx="66.4228" cy="-167.7702" rx="62.0435" ry="19.3093"/>
+<text text-anchor="middle" x="66.4228" y="-164.5141" font-family="Helvetica Neue" font-size="16.00" fill="#000000">Response</text>
+</g>
+<!-- main&#45;&gt;Response -->
+<g id="edge1" class="edge">
+<title>main&#45;&gt;Response</title>
+<path fill="none" stroke="#000000" d="M66.4228,-222.5546C66.4228,-214.875 66.4228,-205.8872 66.4228,-197.4382"/>
+<polygon fill="#000000" stroke="#000000" points="69.9229,-197.1633 66.4228,-187.1633 62.9229,-197.1634 69.9229,-197.1633"/>
+</g>
+<!-- db -->
+<g id="node3" class="node">
+<title>db</title>
+<ellipse fill="none" stroke="#000000" cx="66.4228" cy="-93.4621" rx="27" ry="19.3093"/>
+<text text-anchor="middle" x="66.4228" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">db</text>
+</g>
+<!-- Response&#45;&gt;db -->
+<g id="edge2" class="edge">
+<title>Response&#45;&gt;db</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M66.4228,-148.2466C66.4228,-140.567 66.4228,-131.5792 66.4228,-123.1301"/>
+<polygon fill="#000000" stroke="#000000" points="69.9229,-122.8552 66.4228,-112.8553 62.9229,-122.8553 69.9229,-122.8552"/>
+</g>
+<!-- connString -->
+<g id="node4" class="node">
+<title>connString</title>
+<ellipse fill="none" stroke="#000000" cx="66.4228" cy="-19.154" rx="66.3457" ry="19.3093"/>
+<text text-anchor="middle" x="66.4228" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">connString</text>
+</g>
+<!-- db&#45;&gt;connString -->
+<g id="edge3" class="edge">
+<title>db&#45;&gt;connString</title>
+<path fill="none" stroke="#000000" d="M66.4228,-73.9385C66.4228,-66.2589 66.4228,-57.2711 66.4228,-48.8221"/>
+<polygon fill="#000000" stroke="#000000" points="69.9229,-48.5472 66.4228,-38.5472 62.9229,-48.5472 69.9229,-48.5472"/>
+</g>
+</g>
+</svg>
+</div></div></div><aside class="notes"><p>На слайде представлена часть графа,
+относящаяся к вычислению <span class="inline-code">response</span>.</p><p>В ней легко можно выделить узлы, которые зависят от
+начальных аргументов уровня (<span class="inline-code">Response</span>). Про такие узлы мы будем говорить,
+что они принадлежат уровню. <span class="arrow">&#x27f6</span></p><p>Из оставшейся части графа выделим те, которые являются непосредственными
+зависимостями узлов уровня - это зависимости уровня. <span class="arrow">&#x27f6</span></p><p>Подграф, относящийся к вычислению <span class="inline-code">main</span> теперь выглядит так. <span class="arrow">&#x27f6</span></p><p>Мы будем отображать зависимости уровня пунктиром, потому что они "ленивые".
+Действительно, уровень может быть вызван, а может и нет.
+Соответсвенно, зависимости могут понадобиться, а могут и нет.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript">class LevelFoo {
+  constructor(parent, arg) { // 1
+    this.parent = parent
+    this.arg = arg
+  }
+
+  get_bar() { // 2
+    return this.parent.get_bar()
+  }
+
+  get_baz() { // 2
+    return this._baz ? this._baz : this.compute_baz()
+  }
+
+  main() { // 3
+    let Qux = qux => new LevelQux(this, qux).main() // 4
+    return Qux(1) + Qux(2)
+  }
+}</code></pre></div><aside class="notes"><p>Представим возможную схему компиляции.</p><p>// 1. Конструктор принимает начальные аргументы и вызывающий уровень.</p><p>// 2. Далее идут геттеры для результатов подзадач,
+которые могут понадобиться выше в стеке (зависимости <span class="inline-code">Qux</span>).
+Среди них могут быть те, которые определены на данном уровне (зависят от начальных аргументов) (<span class="inline-code">baz</span>),
+а так же те, которые должны быть определены ниже в стеке (<span class="inline-code">bar</span>)</p><p>// 3. Метод <span class="inline-code">main</span> вычисляет результат уровня.
+В целом методы <span class="inline-code">main</span> и <span class="inline-code">compute_*</span> компилируются обычным способом.</p><p>// 4. Демонстрация вызова дочернего уровня.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><h1 class="f3 gray fw-300">Killer feature...</h1></div><aside class="notes"><p>Тот факт, что наш контейнер автоматически распределяет
+подзадачи по уровням и не накладывает никаких особых ограничений
+на возможный стек вызовов, является существенным преимуществом
+по сравнению с традиционными Java-контейнерами.</p><p>Мы попытаемся показать это на простом, но всё же жизненном примере.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><pre><code class="javascript"><span>app.def('jsonSpaces', () => process.ENV.production ? 0 : 2)
+
+app.def('jsonString', function(jsonSpaces, jsonObject) {
+  return JSON.stringify(jsonObject, null, jsonSpaces)
+})
+
+app.level('stringify', 'jsonString', ['jsonObject'])</span>
+
+<span class="fragment">// Всё, что нужно изменить для поддержки красивых ответов.
+app.def('jsonSpaces', function(req) {
+  return process.ENV.production && !req.query.pretty ? 0 : 2
+})</span></code></pre></div><aside class="notes"><p>Популярный WEB-фреймворк express
+определяет глобальный параметр <span class="inline-code">json spaces</span>
+отвечающий за форматирование JSON ответов.
+По умолчанию он выставлен как 2 в режиме разработки и 0 в продуктиве.</p><p>В контейнере эта часть функционала может выглядеть как показано на слайде.</p><p>Предположим, что позже мы захотели добавить поддержку красивых ответов.
+Т.е. каждый раз, когда в URL запроса присутствует параметр <span class="inline-code">pretty=true</span>
+возвращать отформатированный JSON.</p><p>Для этого достаточно изменить 1 строчку! <span class="arrow">&#x27f6</span></p><p>Используй мы традиционный контейнер,
+нам пришлось бы кропотливо отслеживать все зависимости <span class="inline-code">jsonSpaces</span>
+и переносить их на другой уровень вручную.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Достижения</h1><ol><li class="mv2 fragment">Работали с фундаментальной структурой вычисления, а не терминами ООП</li><li class="mv2 fragment">Ввели понятие уровня</li><li class="mv2 fragment">Устранили Runtime потери на вызов подзадач</li><li class="mv2 fragment">Использовали простую структуру данных для их описания</li></ol></div></div><aside class="notes"><p>Прежде чем перейти к обсуждению реализации прототипа резюмируем наши достижения.</p><p><span class="arrow">&#x27f6</span> 1. Формулировка идеи DI и примеры API подчёркивали
+фундаментальную структуру алгоритма, а не термины ООП.</p><p><span class="arrow">&#x27f6</span> 2. Что позволило нам переосмылслить понятие уровня
+и существенно увеличить мощность паттерна.</p><p><span class="arrow">&#x27f6</span> 3. Собственно, мы ещё ничего не устранили,
+но эта цель игнорируется традиционными контейнерами,
+что является ошибкой. Действительно, используя контейнер,
+мы пытаемся абстрагироваться от сложности взаимозависимости
+элементарных подзадач, однако, наивно полагать, что сложно связаны
+между собой могут быть только тяжёлые задачи.</p><p><span class="arrow">&#x27f6</span> 4. Этот ещё один аспект, которого мы не касались,
+и который и в дальнейшем оставим без внимания.
+Но, всё же, следует отметить, что контейнер должен
+принимать на вход хорошо задокументированную и простую структуру данных,
+что существенно расширит возможности её повторного использования
+в непредвиденных ранее контекстах. Например, некоторые приложения
+могут потребовать альтернативной реализации компилятора,
+легче будет ввести правило вида "Залогировать результаты подзадач, имена которых удовлетворяют определённому шаблону",
+и.т.п.</p><p>Аспекты, перечисленные на этом слайде,
+в совокупности и являются тем стоп-фактором,
+который мешает более широкому применению традиционных DI-контейнеров.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300">Реализация прототипа...</h1></div></div><aside class="notes"><p>В заключении мы обсудим решения
+принятые при разработке прототипа,
+но ограничимся только вопросом производительности.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">How to build zero overhead runtime?</h1><ol><li class="mv2 fragment">Use code generation</li><li class="mv2 fragment">Support async operations in a clever way</li></ol></div></div><aside class="notes"><p><span class="arrow">&#x27f6</span> 1. Стремление к zero overhead RT означает, что мы должны
+избегать динамических вызовов функций и доступов
+используя кодо-генерацию.</p><p><span class="arrow">&#x27f6</span> 2. В случаи с JavaScript мы не можем обойтись без встроенной
+поддержки асинхронных операций. Действительно, в любой момент,
+любая задача может стать асинхронной, а контейнер предоставляет
+хорошую возможность оградиться от каскада ненужных изменений.</p><p>И так, асинхронные операции...
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Замечания</h1><ol><li class="mv2 fragment">Вызов уровня всегда асинхронный</li><li class="mv2 fragment">Много других операций с async интерфейсом, но синхронным результатом</li></ol><div class="fragment"><div class="gray f2 mv2 text-align-center">&#x21D3</div><ol><li class="mv2">Нельзя использовать стандартный Promise API</li><li class="mv2 fragment">Необходима кастомная реализация async/await блоков</li></ol></div></div></div><aside class="notes"><p>Несколько замечаний...</p><p><span class="arrow">&#x27f6</span> 1. Мы вынуждены использовать для вызова уровня асинхронный API,
+поскольку его истинная синхронность/асинхронность может легко поменяться,
+а мы не хотим, чтобы локальный код от этого зависел.</p><p><span class="arrow">&#x27f6</span> 2. Другим примером потенциально (а возможно и часто) синхронной операции
+с асинхронным интерфейсом является вызов асинхронной подзадачи нижележащего уровня.
+Такой вызов будет асинхронным только в первый раз,
+в последующие вызовы результат будет немедленно доступен.</p><p><span class="arrow">&#x27f6</span> Большое кол-во синхронных задач с асинхронным интерфейсом означает,
+что мы не можем использовать Promise API.
+Действительно, стандартный Promise позволяет запросить результат только через event-loop,
+а это означает катострофу для производительности.</p><p><span class="arrow">&#x27f6</span> Точно таким же недостатком обладают и ES8 async функции.
+Это может стать проблемой, если мы захотим их использовать для работы с уровнями.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Быстрые async/await блоки</h1><div><a href="https://github.com/eldargab/go-async">https://github.com/eldargab/go-async</a></div></div></div><aside class="notes"><p>Специально для решения ранее указанных проблем была разработана
+библиотека <span class="inline-code">go-async</span>.</p><p>Синхронные вызовы в её async/await болках, основанных на генераторах,
+стоят примерно 30 - 100 наносекунд.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Async code generation variants</h1><ol><li class="mv2 fragment">Async/await блоки основанные на генераторах</li><li class="mv2 fragment">Комбинация кэширования и исключений</li><li class="mv2 fragment">Комбинация кэширования и проверок</li></ol></div></div><aside class="notes"><p>Прежде чем рассмотреть возможные варианты генерации асинхронного
+кода следует отметить, что мы могли бы сильно поднять производительность
+используя ручную аннотацию асинхронных операций. В прототипе от этого
+было решено отказаться.</p><p>И так варианты.</p><p><span class="arrow">&#x27f6</span> 1. Стоимость подзадачи 30..100 ns.</p><p><span class="arrow">&#x27f6</span> 2. Стоимость синхронной подзадачи 10 ns, асинхронной - 5 mcs.</p><p><span class="arrow">&#x27f6</span> 3. Стоимость синхронной подзадачи 15 ns, асинхронной - 100 ns.</p><p>Мы выберем второй вариант, поскольку настоящая асинхронная операция,
+уже сама по себе подразумевает серьёзную стоимость.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Вариант 2</h1><pre><code class="javascript" style="font-size: 0.6rem;">class LevelFoo {
+  get_bar() { // Геттеры результатов подзадач
+    return this._bar === undefined ? this.compute_bar() : this._bar
+  }
+
+  compute_bar() { // Вызов подзадачи
+    let baz = this.get_baz() // Вычисление зависимостей
+    let qux = this.get_qux()
+    let result = call_bar(baz, qux) // Выполнение подзадачи
+    if (isAsync(result)) throw result // Если результат асинхронный, прерываем вычисление
+    return this._bar = result // Иначе, кэшируем и возвращаем результат
+  }
+
+  main() {
+    let future = new Future // Promise analog
+    this.run(future) // Запускаем вычисление
+    return future
+  }
+
+  run(future) {
+    try {
+      let result = this.get_bar() // Пытаемся получить результат
+      future.done(null, result) // Результат готов, возвращаем
+    } catch(asyncValue) {
+      after(asyncValue, () => this.run(future)) // Пробуем ещё раз
+    }
+  }
+}</code></pre></div></div><aside class="notes"><p>Вариант 3 полностью аналогичен, за исключением того,
+что вместо исключений используются явные сравнения
+промежуточных значений с <span class="inline-code">undefined</span>.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Прототип</h1><div><a href="https://github.com/eldargab/easy-app">https://github.com/eldargab/easy-app</a></div></div></div><aside class="notes"><p>Изложенные в докладе идеи реализованы в проекте <span class="inline-code">easy-app</span>.
+
+</p></aside></section><section><div class="fullsize flex align-items-center pad-center"><div><h1 class="f3 gray fw-300 mb3">Спасибо за внимание!</h1></div></div><aside class="notes"><p>На этом всё, спасибо за внимание!</p></aside></section></div></div><script src="8cd5acbee5eafc060921f4c54bc6ef61.js"></script></body></html>

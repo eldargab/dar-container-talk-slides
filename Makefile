@@ -14,7 +14,7 @@ graphs: $(patsubst %.dot, %.svg, $(wildcard src/examples/*.dot))
 	> $@
 
 
-start: assets
+start:
 	@./node_modules/.bin/parcel src/index.pug
 
 
@@ -22,4 +22,12 @@ clean:
 	@rm -rf .cache dist
 
 
-.PHONY: start clean
+build: clean
+	@./node_modules/.bin/parcel build src/index.pug --no-cache --public-url ./ --out-dir docs
+
+
+publish: build
+	@git add -A && git commit -m "Publish" && git push
+
+
+.PHONY: start clean build publish
