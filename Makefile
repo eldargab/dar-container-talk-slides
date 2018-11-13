@@ -23,7 +23,8 @@ clean:
 
 
 build:
-	@./node_modules/.bin/parcel build src/index.pug --no-cache --public-url ./ --out-dir docs
+	@rm -r docs
+	@./node_modules/.bin/parcel build src/index.pug --no-cache --no-minify --public-url ./ --out-dir docs
 
 
 publish: build
