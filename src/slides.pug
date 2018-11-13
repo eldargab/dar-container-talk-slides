@@ -10,49 +10,49 @@ mixin arr
 section
   .fullsize.flex.align-items-center.pad-center
     div
-      h1.header.mb1 Dependency Injection
-      p Расширяем область применения
+      h1.header.mb1 dar.container
+      p IoC programming framework
 
   aside.notes
+    p.
+      При выборе названия доклада я долго сомневался.
+      С одной стороны опыт общения с разработчиками подсказывал,
+      что лучше избегать таких слов как "Dependency injection"
+      или "IoC контейнер", поскольку они сразу же провоцируют ассоциации
+      не с тем о чём данный доклад, с другой - о Dependency injection
+      и пойдёт речь, с той лишь разницей, что "control flow" будет более
+      богатой структуры, да и "use case" несколько отличаться.
     p.
       Символ #[+arr] в комментариях означает,
       что прежде чем читать дальше нужно открыть
       скрытый фрагмент.
-    p.
-      Предполагается, что вы будете прежде всего
-      читать комментарии (как обычную статью),
-      обращаясь к слайдам, когда это необходимо.
 
 section
   .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 Цели доклада
+    h1.header.mb3 План
     ol
-      li.mv2 Сформулировать ключевую идею лежащую в основе DI
-      li.mv2 Представить новый контейнер
-      li.mv2 Обсудить его реализацию
+      li.mv2 Базовая идея
+      li.mv2 Доработка идеи
+      li.mv2 Реализация, использование, сравнение и итоги.
 
   aside.notes
     p.
-      В этом докладе мы хотим представить новый контейнер.
-      Он весьма не похож на традиционные Java контейнеры
-      и обладает важной особенностью, которая позволяет применять
-      ключевую идею, лежащую в основе DI, более широко и с большим успехом.
-    p.
-      С формулировки ключевой идеи DI мы и начнём...
+      Первая часть доклада может показаться тривиальной,
+      но обозначить базовую идею всё же стоит.
 
 
 section
   .fullsize.flex.align-items-center.pad-center
     pre: code.javascript
-      include examples/abc.js
+      include examples/abc.clj
     .example-graph.ml4
       include examples/abc.svg
 
   aside.notes
     p.
-      Для этого посмотрим на наш код не как на некую последовательность действий,
-      а как на граф, вершины которого обозначают элементарные операции,
-      а рёбра их непосредственную зависимость друг от друга.
+      Для этого посмотрим на наш код как на граф,
+      вершины которого обозначают результаты элементарных операций,
+      а рёбра их аргументы.
 
 
 section
@@ -60,11 +60,11 @@ section
     .example-graph
       include examples/simple.svg
     pre.ml5.fragment(style="padding-top: 3%"): code.javascript
-      include examples/simple.js
+      include examples/simple.clj
 
   aside.notes
     p.
-      В самом оптимистичном случае такой граф будет представлять собой дерево.
+      В простейшем случаи такой граф будет представлять собой дерево.
     p.
       Дерево замечательно тем, что для его реализации достаточно самых базовых
       приёмов программирования.
@@ -72,442 +72,425 @@ section
       Действительно, если операций станет слишком много,
       мы всегда сможем разбить их на отдельные подпрограммы, каждая из которых будет
       оставаться простой. #[+arr]
+    p.
+      Посмортим, что будет в более сложном случае...
 
 
 section
   .fullsize.flex.align-items-center.pad-center
-    pre: code.javascript
-      include examples/complex.js
-    .example-graph.ml4.fragment
+    .example-graph.mr4
       include examples/complex.svg
+    pre: code.clojure.fragment
+      include examples/complex.clj
 
   aside.notes
     p.
-      Посмортим, что будет в более сложном случае.
-      Для этого рассмотрим псевдо-код на слайде.
+      Здесь любая попытка выделить несколько узлов
+      в отдельную функцию приведёт лишь к увеличению сложности.
     p.
-      С математической точки зрения спецификация проста и понятна,
-      но насколько легко получится расставить эти выражения в правильном
-      порядке? А если таких выражений будет 100 или 1000?
-      Для данного конкретного примера правильный порядок подскажет граф справа. #[+arr]
+      Для того, что бы в этом убедиться достаточно посмотреть
+      на любой подграф состоящий из нескольких узлов
+      и сравнить кол-во входящих/исходящих рёбер
+      с кол-вом рёбер, которые остались внутри.
     p.
-      Что интересно, единственно как мы можем запрограммировать такой граф, это
-      кропотливо записать элементарные операции в едином монолитном куске кода.
-      Действительно, любая попытка разбить его на отдельные подпрограммы
-      приведёт только к усложнению, а небольшие изменения в требованиях
-      могут разрушить всю концепцию отдельно взятого разбиения.
+      Ситуация осложняется ещё и тем, что конкретная структура
+      связей в подобных графах носит "случайный" характер.
+      Т.е. даже если какое-то осмысленное разбиение на более крупные
+      компоненты существует сегодня, оно может быть разрушено
+      завтра в виду простого и невинного изменения требований.
     p.
-      Естественно, мы можем не программировать порядок вручную.
-      Приведём пример того, как это может выглядеть...
-
+      Самой простой реализацией такого графа будет монолитная последовательность
+      элементарных операций расставленных в правильном порядке.
+      #[+arr]
+    p.
+      Естественно, программировать и поддерживать такой код
+      вручную будет проблематично, особенно если граф большой,
+      а требования меняются часто. Отсюда идея - использовать
+      инструмент, который проанализирует структуру связей и сгенерирует
+      оптимальный код за нас.
 
 section
   .fullsize.flex.align-items-center.pad-center
-    pre: code.javascript
-      include examples/container.js
-    .example-graph.ml4
+    .example-graph.mr4
       include examples/complex.svg
-
-  aside.notes
-    p.
-      В начале мы определим наши элементарные выражения обычным спрособом,
-      а затем при помощи метода #[+code app.compile()] попросим контейнер
-      скомпилировать функцию, которая возвращает #[+code result], а в качестве параметров
-      принимает готовые значения #[+code a] и #[+code b].
-    p.
-      Заметьте, что наш код будет оставаться простым независимо
-      от кол-ва элементарных операций и сложности их взаимозависимости.
-    p.
-      В этом и заключается ключевая идея DI.
-
-
-section
-  .fullsize.flex.align-items-center.pad-center
-    h1.header Переходим к практике...
-
-  aside.notes
-    p.
-      Мы только что обсудили инструмент, который позволяет
-      кардинально упростить реализацию программ определённой структуры.
-      Тем не менее, если попробовать применить его на практике,
-      то окажется, что он полезен не так уж и часто. Вернее, будет казаться,
-      что чего-то не хватает.
-    p.
-      Продемонстируем проблему и её решение смоделировав разработку реального
-      приложения.
-
-
-section
-  .fullsize.flex.align-items-center.pad-center
-    pre: code.javascript
-      span.fragment app.def('response', (user) => `Hello ${user}!`)
-      |
-      |
-      |
-      span.fragment app.def('user', (db, cookies) => db.getUser(cookies.user))
-      |
-      |
-      |
-      span.fragment app.def('cookies', (req) => parse(req.headers['Cookie']))
-      |
-      |
-      |
-      span.fragment
-        | app.def('db', (connString) => open(connString))
-        |
-        | app.def('connString', () => process.ENV.DB_URL)
+    pre: code.clojure
+      span.fragment.
+        (define app :result :args [:abcd :xy] :fn +)
+        (define app :abcd   :args [:b :ab]    :fn +)
+        (define app :ab     :args [:b :a]     :fn +)
+        (define app :cd     :args [:b :a]     :fn +)
+        (define app :d      :args [:abcd :ab] :fn +)
+        (define app :x      :args [:d :cd]    :fn +)
+        (define app :xy     :args [:abcd :x]  :fn +)
       |
       |
       |
       span.fragment.
-        app.def('main', function(Response) {
-          http.createServer(function(req, res)) {
-            let msg = Response(req)
-            res.setHeader('Content-Type', 'text/plain');
-            res.end(msg);
-          })
-        })
+        (def result
+          (compile-app app :result [:a :b]))
+
+        (result 1 1) ; => 13
 
   aside.notes
     p.
-      Представим бэкэнд типичного WEB-приложения и начнём его определять.
+      Это может выглядеть следующим образом...
     p.
-      #[+arr] Предположим, что всё, что нам нужно - это выводить текстовую страницу с приветсвием
-      для текущего пользователя.
+      Сперва определим граф. #[+arr]
     p.
-      #[+arr] Информацию о пользователе мы будем подгружать из некой БД.
+      После этого мы попросим инструмент скомпилировать
+      функцию, которая будет принимать :a и :b
+      и возвращать :result. #[+arr]
     p.
-      #[+arr] Cookies получаем разбором заголовка Cookie текущего запроса.
+      Несмотря на то, что инструменты подобного рода
+      хорошо известны и широко используются, можно
+      заметить, что речь идёт о поддержке кода весьма определённой структуры.
+      Мы не можем создать аналоги таких конструкции как стеки, замыкания, и.т.п.,
+      в то время как необходимость в них возникает практически сразу.
     p.
-      #[+arr] Обычным образом открываем соединение с БД.
+      Покажем это на примере.
+      Для этого представим бэкэнд типичного WEB-приложения...
+
+section
+  .fullsize.flex.align-items-center.pad-center
+    pre: code.clojure
+      span.
+        (define app :response
+          :args [:user]
+          :fn #(str "Hello " %))
+
+        (define app :user
+          :args [:db :req]
+          :fn (fn [db req]
+                (get-user db (-> req :query :user))))
+
+        (define app :db
+          :args [:config]
+          :fn #(open (:connection-string %)))
+
+        (define app :config
+          :fn #(read "config.edn"))
+
+  aside.notes
     p.
-      #[+arr] Определяем сервер.
-    p.
-      Как видим, для запуска приложения нам недостаёт только функции #[+code Response],
-      которая должна принимать #[+code req] и возвращать приветственную страницу,
-      причём её полная спецификация в контейнере уже имеется.
+      С математической точки зрения приложение определено и понятно,
+      но как использовать такую спецификацию?
 
 
 section
   .fullsize.flex.align-items-center.pad-center
-    pre: code.javascript
-      include examples/web-bad.js
+    .example-graph(style="margin-right: 80px")
+      include examples/web.svg
+    div
+      .fragment
+        h1.sub-header.mb3 Вариант 1
+        pre: code.clojure.
+          (def response
+            (compile-app :response [:req]))
+      .fragment
+        h1.sub-header.mt4.mb3 Вариант 2
+        pre: code.clojure.
+          (def response
+            (compile-app :response [:req :db]))
+
+          (define app :main
+            :args [:db]
+            :fn (fn [db]
+                  (run-server (fn [req]
+                                (response req db)))))
+
+          ((compile-app app :main [])) ; run the server
 
   aside.notes
     p.
-      Мы могли бы определить #[+code Response] вручную,
-      как это показано на данном слайде, но такой подход плохо масштабируется.
+      "Из коробки" у нас есть два варианта:
     p.
-      Действительно, в реальном приложении кол-во аргументов функции #[+code Response]
-      может достигать десятков и сотен, а их состав постоянно меняться.
+      1. "В стиле PHP" #[+arr]
     p.
-      Существуют и другие сложности, которые мы сейчас не будем обсуждать,
-      потому что сразу перейдём к правильному решению.
+      Т.е. используем :response в качестве точки входа и
+      пересчитываем всё что нужно при каждом запросе.
+    p.
+      2. Отслеживаем зависимости вручную #[+arr]
+    p.
+      Несмотря на то, что в данном конкретном примере всё просто,
+      не трудно представить вместо :db длинный список параметров,
+      а вместо двух-уровневого приложения стек из многих уровней, где каждый
+      должен получить не только свои зависимости, но и зависимости всех уровней,
+      которые он вызывает.
+    p.
+      Так же следует заметить, что в случаи применения второго варианта
+      теряется возможность сборки приложения из нескольких частей путём
+      простого слияния определений в один граф, так как любое такое
+      слияние может изменить зависимости того или иного уровня.
+    p.
+      Нам не зачем идти на компромисы, поскольку существует оптимальное решение!
 
 
 section
   .fullsize.flex.align-items-center.pad-center
-    pre: code.javascript app.level('Response', 'response', ['req']) // Уровень!
+    .example-graph(style="margin-right: 80px")
+      include examples/web.svg
+    div
+      h1.sub-header.mb3 Уровень!
+      pre: code.clojure.
+        (define-level app :req-handler :response [:req])
+
+        (define app :main
+          :args [:req-handler]
+          :fn run-server)
+
+        ((compile-app app :main [])) ; run the server
 
   aside.notes
     p.
-      При помощи выражения на слайде мы указали,
-      что нам нужна функция #[+code Response],
-      которая принимает в качестве аргумента готовое значение #[+code req]
-      и возвращает #[+code response]. Определённую таким образом функцию мы
-      будем называть уровнем.
+      При помощи выражения #[+code define-level] мы
+      определили ещё один узел графа. Его runtime значением
+      является функция, которая принимает #[+code :req] и
+      возвращает #[+code :response].
     p.
-      Уровень является полноправным элементом графа.
-      Т.е. его можно свободно использовать при определении
-      других подзадач и даже вызывать рекурсивно.
-    p.
-      Посмотрим как это работает...
+      Уровень отличается от всех остальных узлов только тем,
+      что его определение и зависимости выводятся инструментом автоматически.
+      Во всём остальном это обычное значение, которое мы можем свободно
+      использовать.
 
 
 section
-  .fragment(data-state="highlight-req")
-  .fragment(data-state="highlight-dep")
+  .fragment(data-state="highlight-red")
+  .fragment(data-state="highlight-green")
   .fullsize.flex.align-items-center.pad-center
     .flex.fullwidth
       .example-graph.width-1of2
-        include examples/web-response.svg
-      .example-graph.fragment
         include examples/web.svg
+      .example-graph.fragment
+        include examples/web-main.svg
 
   aside.notes
     p.
+      Как это работает.
+    p.
       На слайде представлена часть графа,
-      относящаяся к вычислению #[+code response].
+      относящаяся к вычислению #[+code :response].
     p.
       В ней легко можно выделить узлы, которые зависят от
-      начальных аргументов уровня (#[+code Response]). Про такие узлы мы будем говорить,
-      что они принадлежат уровню. #[+arr]
+      начальных аргументов уровня. #[+arr]
+      Про такие узлы мы будем говорить, что они принадлежат уровню.
     p.
       Из оставшейся части графа выделим те, которые являются непосредственными
       зависимостями узлов уровня - это зависимости уровня. #[+arr]
     p.
-      Подграф, относящийся к вычислению #[+code main], теперь выглядит так. #[+arr]
-    p.
-      Мы будем отображать зависимости уровня пунктиром потому, что они "ленивые".
-      Действительно, уровень может быть вызван, а может и нет.
-      Соответсвенно, зависимости могут понадобиться, а могут и нет.
+      Подграф, относящийся к #[+code :main], теперь выглядит так #[+arr]
 
 
 section
   .fullsize.flex.align-items-center.pad-center
-    pre: code.javascript
-      include examples/Level.js
-
-  aside.notes
-    p.
-      Представим возможную схему компиляции.
-    p.
-      // 1. Конструктор принимает начальные аргументы и вызывающий уровень.
-    p.
-      // 2. Далее идут геттеры для результатов подзадач,
-      которые могут понадобиться выше в стеке (зависимости #[+code Qux]).
-      Среди них могут быть те, которые определены на данном уровне (зависят от начальных аргументов) (#[+code baz]),
-      а так же те, которые должны быть определены ниже в стеке (#[+code bar])
-    p.
-      // 3. Метод #[+code main] вычисляет результат уровня.
-      В целом методы #[+code main] и #[+code compute_*] компилируются обычным способом.
-    p.
-      // 4. Демонстрация вызова дочернего уровня.
-
-
-section
-  .fullsize.flex.align-items-center.pad-center
-    h1.header Killer feature...
-
-  aside.notes
-    p.
-      Тот факт, что наш контейнер автоматически распределяет
-      подзадачи по уровням и не накладывает никаких особых ограничений
-      на возможный стек вызовов, является существенным преимуществом
-      по сравнению с традиционными Java-контейнерами.
-    p.
-      Мы попытаемся показать это на простом примере.
-
-
-section
-  .fullsize.flex.align-items-center.pad-center
-    pre: code.javascript
-      span.
-        app.def('jsonSpaces', () => process.ENV.production ? 0 : 2)
-
-        app.def('jsonString', function(jsonSpaces, jsonObject) {
-          return JSON.stringify(jsonObject, null, jsonSpaces)
-        })
-
-        app.level('stringify', 'jsonString', ['jsonObject'])
+    pre: code.clojure
+      span.fragment.
+        (define app :serialize
+          :args [:config]
+          :fn (fn [{production? :production?}]
+                (if production?
+                  pr-str
+                  pprint-str)))
+      |
       |
       |
       |
       span.fragment.
-        // Всё, что нужно изменить для поддержки красивых ответов.
-        app.def('jsonSpaces', function(req) {
-          return process.ENV.production && !req.query.pretty ? 0 : 2
-        })
+        (define app :serialize
+          :args [:req :config]
+          :fn (fn [req {production? :production?}]
+                (if (and production? (not (-> req :query :pretty)))
+                  pr-str
+                  pprint-str)))
+
   aside.notes
     p.
-      Популярный WEB-фреймворк express
-      определяет глобальный параметр #[+code json spaces]
-      отвечающий за форматирование JSON ответов.
-      По умолчанию он выставлен как 2 в режиме разработки и 0 в продуктиве.
+      Покажем гибкость и удобство получившейся системы на простом,
+      но достаточно реалистичном примере.
     p.
-      В контейнере эта часть функционала может выглядеть как показано на слайде.
+      Предположим, что нам потребовалось возвращать пользователям
+      EDN ответы. Для этого определим функцию #[+code serialize],
+      которая будет принимать значение для сериализации и возвращать строку.
+      Так же, предположим, что для облегчения отладки во время разработки
+      мы хотим видеть красиво отформатированные ответы. В первом приближении
+      определение может иметь следующий вид #[+arr]
     p.
-      Предположим, что позже мы захотели добавить поддержку красивых ответов.
-      Т.е. каждый раз, когда в URL запроса присутствует параметр #[+code pretty=true]
-      возвращать отформатированный JSON.
+      #[+code serialize] вычисляется один раз за время
+      работы приложения, а затем повторно используется.
     p.
-      Для этого достаточно изменить 1 строчку! #[+arr]
+      Теперь предположим, что мы захотели видеть красивые ответы даже
+      в продуктиве если в URL присутствует параметр #[+code pretty].
+      Всё, что для этого нужно - это немного изменить определение! #[+arr]
+
+
+section
+  .fullsize.flex.align-items-center.pad-center
+    a(href="https://github.com/dar-clojure/container") https://github.com/dar-clojure/container
+
+  aside.notes
     p.
-      Используй мы традиционный контейнер,
-      нам пришлось бы кропотливо отслеживать все зависимости #[+code jsonSpaces]
-      и переносить их на другой уровень вручную.
+      Все показанные ранее примеры реально работают :)
+    p.
+      Вкратце пробежимся по прочим деталям библиотеки, которые не меняют
+      общей картины, но важны для практического использования...
+
+
+section
+  .fullsize.flex.align-items-center.pad-center: .flex.flex-col
+    .flex.fullwidth
+      .fragment(style="margin-right: 120px")
+        h1.sub-header.mb2 Lazy arguments
+        pre: code.clojure.
+          (define app :b-or-c
+            :args [:a :b :c]
+            :lazy \#{:b :c}
+            :fn (fn [a b c]
+                  (if a
+                    (b)
+                    (c))))
+
+      .fragment
+        h1.sub-header.mb2 Dynamic evaluation
+        pre: code.clojure.
+          (define app :b-or-c
+            :args [:a :eval]
+            :uses \#{:b :c}
+            :fn (fn [a eval]
+                  (if a
+                    (eval :b)
+                    (eval :c))))
+    .flex.fullwidth(style="margin-top: 80px")
+      .fragment(style="margin-right: 120px; min-width: 260px")
+        h1.sub-header.mb2 PRE arguments
+        pre: code.clojure.
+          (define app :ab
+            :pre [:x :y]
+            :args [:a :b]
+            :fn (fn [a b]
+                  (+ a b)))
+      .fragment
+        h1.sub-header.mb2 Control flow
+        ul
+          li.mb2.f-small.fragment Execution order is strictly defined.
+          li.f-small.fragment Each node is calculated only when absolutly required.
+
+  aside.notes
+    p.
+      Lazy arguments #[+arr]
+    p.
+      Dynamic evaluation #[+arr]
+    p.
+      PRE arguments #[+arr]
+    p.
+      PRE arguments - список узлов,
+      которые должны быть выполненны до запуска текущего узла
+      и вычисления его аргументов.
+    p.
+      Control flow #[+arr]
+    p.
+      #[+arr]
+      Порядок вычисления узлов строго определён отношениями
+      зависимости, а так же списками #[+code :pre] и #[+code :args].
+    p.
+      #[+arr]
+      Каждый узел (за время выполнения уровня) вычисляется строго один раз и
+      только тогда, когда это строго необходимо.
+    p.
+      Т.е, например, создание функции-уровня для передачи в качестве аргумента
+      какому либо узлу не приводит к предварительному вычислению зависимостей уровня.
+
+
+section
+  .fullsize.flex.align-items-center.pad-center
+    div
+      h1.sub-header.mb2 Closables
+      pre: code.clojure.
+        (define app :file
+          :close #(.close %) ; Guaranteed to be called right before level exit
+          :fn #(open "file.txt"))
+
+  aside.notes
+    p.
+      Исключением из правила является главный узел уровня.
+      В этом случаи атрибут #[+code :close] игнорируется.
+
+
+section
+  .fullsize.flex.align-items-center.pad-center
+    div
+      h1.sub-header.mb2 Thread safety
+      p.mb4.
+        Uses lock-based synchronization for shared level-state if such is present.
+      pre: code.clojure.
+        (if (. state isReadyA)
+          (. state A)
+          (locking state
+            (if (. state isReadyA)
+              (. state A)
+              (let [v (compute-A state)]
+                (set! (. state A) v)
+                (set! (. state isReadyA) true)
+                v))))
+
+  aside.notes
+    p.
+      Класс для хранения состояния уровня (и соотвественно код изображённый на слайде)
+      создаётся только в случаи необходимости.
+    p.
+      В простешем случаи код уровня
+      представляет собой простую последовательность выражений #[+code let].
 
 
 section
   .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 Достижения
-    ol
-      li.mv2.fragment Работали с фундаментальной структурой вычисления, а не терминами ООП
-      li.mv2.fragment Ввели понятие уровня
-      li.mv2.fragment Устранили Runtime потери на вызов подзадач
-      li.mv2.fragment Использовали простую структуру данных для их описания
+    h1.header.mb3 dar.container vs DI
+    table.table
+      thead
+        tr
+          th Feature
+          th dar.container
+          th Traditional DI
+      tbody
+        tr
+          td.fw-600.gray Primary use case
+          td Solve a certain structural problem.
+          td Make things configurable, overridable, facilitate app initialization.
+        tr
+          td.fw-600.gray Evaluation strategy
+          td.
+            Compilation to efficient code is a must.
+            Even light functions can have a complex
+            control flow.
+          td Dynamic evaluation mostly.
+        tr
+          td.fw-600.gray Support for levels
+          td It's a main feature!
+          td Very limited and quirky in form of scopes.
 
   aside.notes
+    p.fw-600.
+      Make things configurable...
     p.
-      Прежде чем перейти ко второй части доклада
-      (обсуждению реализации прототипа) резюмируем наши достижения.
+      Если посмотреть на инструменты популярные в Clojure
+      community (например https://github.com/tolitius/mount),
+      то там речь идёт о старте определённых частей приложения,
+      перезагрузке определённых частей, и.т.п, что может быть удобно
+      при интерактивной разработки. Подобный функционал вне объёма проекта.
+      Здесь речь идёт не а каком-то принципиальном ограничении, а о разных
+      интерпретациях одной и той же струтктуры данных,
+      и одна их них остаётся за бортом.
+    p.fw-600.
+      Support for levels is very limited and quirky...
     p.
-      #[+arr] 1. Формулировка идеи DI и примеры API подчёркивали
-      фундаментальную структуру алгоритма, а не термины ООП.
-    p.
-      #[+arr] 2. Что позволило нам переосмылслить понятие уровня
-      и существенно увеличить мощность паттерна.
-    p.
-      #[+arr] 3. Собственно, мы ещё ничего не устранили,
-      но эта цель игнорируется традиционными контейнерами,
-      что является ошибкой. Действительно, используя контейнер,
-      мы пытаемся абстрагироваться от сложности взаимозависимости
-      элементарных подзадач, однако, наивно полагать, что сложно связаны
-      между собой могут быть только тяжёлые задачи.
-    p.
-      #[+arr] 4. Этот ещё один аспект, которого мы не касались,
-      и который и в дальнейшем оставим без внимания.
-      Но, всё же, следует отметить, что контейнер должен
-      принимать на вход хорошо задокументированную и простую структуру данных,
-      что существенно расширит возможности её повторного использования
-      в непредвиденных ранее контекстах. Например, некоторые приложения
-      могут потребовать альтернативной реализации компилятора,
-      легче будет ввести правило вида "Залогировать результаты подзадач, имена которых удовлетворяют определённому шаблону",
-      и.т.п.
-    p.
-      Аспекты, перечисленные на этом слайде,
-      в совокупности и являются тем стоп-фактором,
-      который мешает более широкому применению традиционных DI-контейнеров.
+      Механизм скопов в традиционных DI контейнерах
+      по крайней мере требует ручной аннотации
+      принадлежности каждого узла тому или иному скопу,
+      что эквивалентно ситуации с ручным отслеживанием
+      зависимостей уровня (Вариант 2 из доклада).
+      Помимо этого, реализация стека из нескольких уровней
+      требует учёта целого рядя странностей,
+      своих для каждого контейнера.
 
 
 section
-  .fullsize.flex.align-items-center.pad-center: div
-    h1.header Реализация прототипа...
-
-  aside.notes
-    p.
-      В заключении мы обсудим решения
-      принятые при разработке прототипа,
-      но ограничимся только вопросом производительности.
-
-
-section
-  .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 How to build zero overhead runtime?
-    ol
-      li.mv2.fragment Use code generation
-      li.mv2.fragment Support async operations in a clever way
-
-  aside.notes
-    p.
-      #[+arr] 1. Стремление к zero overhead RT означает, что мы должны
-      избегать динамических вызовов функций и доступов
-      используя кодо-генерацию.
-    p.
-      #[+arr] 2. В случаи с JavaScript мы не можем обойтись без встроенной
-      поддержки асинхронных операций. Действительно, в любой момент,
-      любая задача может стать асинхронной, а контейнер предоставляет
-      хорошую возможность оградиться от каскада ненужных изменений.
-    p.
-      И так, асинхронные операции...
-
-
-section
-  .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 Замечания по поводу асинхронности
-    ol
-      li.mv2.fragment Вызов уровня всегда асинхронный
-      li.mv2.fragment Много операций с async интерфейсом, но синхронным результатом
-    div.fragment
-      .gray.f2.mv2.text-align-center &#x21D3
-      ol
-        li.mv2 Нельзя использовать стандартный Promise API
-        li.mv2.fragment Необходима кастомная реализация async/await блоков
-
-  aside.notes
-    p.
-      Несколько замечаний...
-    p.
-      #[+arr] 1. Мы вынуждены использовать для вызова уровня асинхронный API,
-      поскольку его истинная синхронность/асинхронность может легко поменяться,
-      а мы не хотим, чтобы локальный код от этого зависел.
-    p.
-      #[+arr] 2. Другим примером потенциально (а возможно и часто) синхронной операции
-      с асинхронным интерфейсом является вызов асинхронной подзадачи нижележащего уровня.
-      Такой вызов будет асинхронным только в первый раз,
-      в последующем результат будет немедленно доступен.
-    p.
-      #[+arr] Большое кол-во синхронных задач с асинхронным интерфейсом означает,
-      что мы не можем использовать Promise API.
-      Действительно, стандартный Promise позволяет запросить результат только через event-loop,
-      а это означает катострофу для производительности.
-    p.
-      #[+arr] Точно таким же недостатком обладают и ES8 async функции.
-      Это может стать проблемой, если мы захотим их использовать для работы с уровнями.
-
-
-section
-  .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 Быстрые async/await блоки
-    div: a(href="https://github.com/eldargab/go-async") https://github.com/eldargab/go-async
-
-  aside.notes
-    p.
-      Специально для решения ранее указанных проблем была разработана
-      библиотека #[+code go-async].
-    p.
-      Синхронные вызовы в её async/await болках, основанных на генераторах,
-      стоят примерно 30 - 100 наносекунд.
-
-
-section
-  .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 Async code generation variants
-    ol
-      li.mv2.fragment Async/await блоки основанные на генераторах
-      li.mv2.fragment Комбинация кэширования и исключений
-      li.mv2.fragment Комбинация кэширования и проверок
-
-  aside.notes
-    p.
-      Прежде чем рассмотреть возможные варианты генерации асинхронного
-      кода следует отметить, что мы могли бы сильно поднять производительность
-      используя ручную аннотацию асинхронных операций. В прототипе от этого
-      было решено отказаться.
-    p.
-      И так варианты.
-    p.
-      #[+arr] 1. Стоимость подзадачи 30..100 ns.
-    p.
-      #[+arr] 2. Стоимость синхронной подзадачи 10 ns, асинхронной - 5 mcs.
-    p.
-      #[+arr] 3. Стоимость синхронной подзадачи 15 ns, асинхронной - 100 ns.
-    p.
-      Мы выберем второй вариант, поскольку настоящая асинхронная операция
-      уже сама по себе подразумевает серьёзную стоимость.
-
-
-section
-  .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 Вариант 2
-    pre: code.javascript(style="font-size: 0.6rem")
-      include examples/async.js
-
-  aside.notes
-    p.
-      Вариант 3 полностью аналогичен, за исключением того,
-      что вместо исключений используются явные сравнения
-      промежуточных значений с #[+code undefined].
-
-
-section
-  .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 Прототип
-    div: a(href="https://github.com/eldargab/easy-app") https://github.com/eldargab/easy-app
-
-  aside.notes
-    p.
-      Изложенные в докладе идеи реализованы в проекте #[+code easy-app].
-
-
-section
-  .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 Спасибо за внимание!
-
-  aside.notes
-    p.
-      На этом всё, спасибо за внимание!
-    p.
-      P.S. Содержание второй части доклада может быть сильно
-      изменено по мере готовности WEB-фреймворка на основе
-      представленного контейнера.
+  .fullsize.flex.align-items-center.pad-center
+    h1.header Спасибо за внимание!

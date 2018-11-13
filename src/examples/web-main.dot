@@ -1,0 +1,6 @@
+digraph webMain {
+  handler[label="req-handler"]
+  main -> handler
+  handler -> db [style="dashed"]
+  db -> config
+}

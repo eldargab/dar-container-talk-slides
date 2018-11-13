@@ -31,7 +31,7 @@ html, body {
 
 .reveal .speaker-notes {
   font-family: var(--main-font);
-  font-size: 16px;
+  font-size: 14px;
   color: var(--main-text-color);
   ph(2)
   pv(0)
@@ -121,9 +121,21 @@ li::before, span.number {
 
 
 .header {
-  @extend .f3;
+  font-size: var(--font-3);
   font-weight: var(--light-font);
   color: var(--gray);
+}
+
+
+.sub-header {
+  // font-size: var(--font-2);
+  font-weight: 500;
+  color: var(--gray);
+}
+
+
+.bolder {
+  font-weight: 500;
 }
 
 
@@ -137,11 +149,31 @@ highlight-subgraph(color)
   }
 
 
-.highlight-req .example-graph .req {
+.highlight-red .red {
   highlight-subgraph: red;
 }
 
 
-.highlight-dep .example-graph .dep {
+.highlight-green .green {
   highlight-subgraph: green;
+}
+
+.table {
+  font-size: var(--font-small);
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  th, td {
+    pa(2);
+    border: 1px solid #ddd;
+  }
+
+  th {
+    font-size: var(--font-small);
+    font-weight: bold;
+  }
+
+  // tr:nth-child(even) {
+  //   background-color: #eee;
+  // }
 }

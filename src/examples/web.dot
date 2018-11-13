@@ -1,5 +1,10 @@
 digraph web {
-  main -> Response
-  Response -> db [style="dashed"]
-  db -> connString
+  response[class="red"]
+  user[class="red"]
+  req[class="red"]
+  db[class="green"]
+  response -> user [class="red"]
+  user -> req [class="red"]
+  user -> db [class="green"]
+  db -> config
 }
