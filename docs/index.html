@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EasyApp</title>
+    <title>easy-app</title>
     <link rel="stylesheet" type="text/css" href="reveal.7bb7f4cb.css">
     <link rel="stylesheet" type="text/css" href="vs.b792cf4c.css">
-    <link rel="stylesheet" type="text/css" href="src.4a14b455.css">
+    <link rel="stylesheet" type="text/css" href="src.b3f482ea.css">
   </head>
   <body>
     <div class="reveal">
@@ -14,20 +14,11 @@
         <section>
           <div class="fullsize flex align-items-center pad-center">
             <div>
-              <h1 class="header mb1">EasyApp</h1>
+              <h1 class="header mb1">easy-app</h1>
               <p>IoC programming framework</p>
             </div>
           </div>
           <aside class="notes">
-            <p>
-              При выборе названия доклада я долго сомневался.
-              С одной стороны опыт общения с разработчиками подсказывал,
-              что лучше избегать таких слов как "Dependency injection"
-              или "IoC контейнер", поскольку они сразу же провоцируют ассоциации
-              не с тем о чём данный доклад, с другой - о Dependency injection
-              и пойдёт речь, с той лишь разницей, что "control flow" будет более
-              богатой структуры, да и "use case" несколько отличаться.
-            </p>
             <p>Символ <span class="arrow">&#x27f6</span> в комментариях означает,
               что прежде чем читать дальше нужно открыть
               скрытый фрагмент.
@@ -46,14 +37,6 @@
               </ol>
             </div>
           </div>
-          <aside class="notes">
-            <p>
-              Первая часть доклада может показаться тривиальной,
-              но обозначить базовую идею всё же стоит.
-              
-              
-            </p>
-          </aside>
         </section>
         <section>
           <div class="fullsize flex align-items-center pad-center">
@@ -125,7 +108,7 @@
           </div>
           <aside class="notes">
             <p>
-              Для этого посмотрим на наш код как на граф,
+              Посмотрим на наш код как на граф,
               вершины которого обозначают результаты элементарных операций,
               а рёбра их аргументы.
               
@@ -639,7 +622,7 @@
 </svg>
 
             </div>
-            <pre><code class="clojure"><span class="fragment">(define app :result :args [:abcd :xy] :fn +)
+            <pre><code class="clojure"><span>(define app :result :args [:abcd :xy] :fn +)
 (define app :abcd   :args [:b :ab]    :fn +)
 (define app :ab     :args [:b :a]     :fn +)
 (define app :cd     :args [:b :a]     :fn +)
@@ -654,7 +637,7 @@
 </span></code></pre>
           </div>
           <aside class="notes">
-            <p>Это может выглядеть следующим образом...</p>
+            <p>В контексте EasyApp это выгдядит так...</p>
             <p>Сперва определим граф. <span class="arrow">&#x27f6</span>
             </p>
             <p>
@@ -668,10 +651,7 @@
               заметить, что речь идёт о поддержке кода весьма определённой структуры.
               Мы не можем создать аналоги таких конструкции как стеки, замыкания, и.т.п.,
               в то время как необходимость в них возникает практически сразу.
-            </p>
-            <p>
-              Покажем это на примере.
-              Для этого представим бэкэнд типичного WEB-приложения...
+              
               
             </p>
           </aside>
@@ -694,15 +674,69 @@
 (define app :config
   :fn #(read "config.edn"))
 </span></code></pre>
+            <div class="example-graph" style="margin-left: 80px"><svg width="151pt" height="269pt" viewbox="0.00 0.00 151.19 269.23" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 265.2322)">
+<title>web</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-265.2322 147.1902,-265.2322 147.1902,4 -4,4"></polygon>
+<!-- response -->
+<g id="node1" class="node red">
+<title>response</title>
+<ellipse fill="none" stroke="#000000" cx="63.662" cy="-242.0782" rx="57.6718" ry="19.3093"></ellipse>
+<text text-anchor="middle" x="63.662" y="-238.8222" font-family="Helvetica Neue" font-size="16.00" fill="#000000">response</text>
+</g>
+<!-- user -->
+<g id="node2" class="node red">
+<title>user</title>
+<ellipse fill="none" stroke="#000000" cx="63.662" cy="-167.7702" rx="33.2081" ry="19.3093"></ellipse>
+<text text-anchor="middle" x="63.662" y="-164.5141" font-family="Helvetica Neue" font-size="16.00" fill="#000000">user</text>
+</g>
+<!-- response&#45;&gt;user -->
+<g id="edge1" class="edge red">
+<title>response&#45;&gt;user</title>
+<path fill="none" stroke="#000000" d="M63.662,-222.5546C63.662,-214.875 63.662,-205.8872 63.662,-197.4382"></path>
+<polygon fill="#000000" stroke="#000000" points="67.1621,-197.1633 63.662,-187.1633 60.1621,-197.1634 67.1621,-197.1633"></polygon>
+</g>
+<!-- req -->
+<g id="node3" class="node red">
+<title>req</title>
+<ellipse fill="none" stroke="#000000" cx="27.662" cy="-93.4621" rx="27.825" ry="19.3093"></ellipse>
+<text text-anchor="middle" x="27.662" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">req</text>
+</g>
+<!-- user&#45;&gt;req -->
+<g id="edge2" class="edge red">
+<title>user&#45;&gt;req</title>
+<path fill="none" stroke="#000000" d="M54.5777,-149.0191C50.4222,-140.4417 45.4186,-130.1137 40.8587,-120.7015"></path>
+<polygon fill="#000000" stroke="#000000" points="44.0044,-119.1669 36.4945,-111.6934 37.7047,-122.2189 44.0044,-119.1669"></polygon>
+</g>
+<!-- db -->
+<g id="node4" class="node green">
+<title>db</title>
+<ellipse fill="none" stroke="#000000" cx="100.662" cy="-93.4621" rx="27" ry="19.3093"></ellipse>
+<text text-anchor="middle" x="100.662" y="-90.206" font-family="Helvetica Neue" font-size="16.00" fill="#000000">db</text>
+</g>
+<!-- user&#45;&gt;db -->
+<g id="edge3" class="edge green">
+<title>user&#45;&gt;db</title>
+<path fill="none" stroke="#000000" d="M72.9987,-149.0191C77.2696,-140.4417 82.4122,-130.1137 87.0988,-120.7015"></path>
+<polygon fill="#000000" stroke="#000000" points="90.2599,-122.2052 91.5842,-111.6934 83.9937,-119.085 90.2599,-122.2052"></polygon>
+</g>
+<!-- config -->
+<g id="node5" class="node">
+<title>config</title>
+<ellipse fill="none" stroke="#000000" cx="100.662" cy="-19.154" rx="42.5565" ry="19.3093"></ellipse>
+<text text-anchor="middle" x="100.662" y="-15.898" font-family="Helvetica Neue" font-size="16.00" fill="#000000">config</text>
+</g>
+<!-- db&#45;&gt;config -->
+<g id="edge4" class="edge">
+<title>db&#45;&gt;config</title>
+<path fill="none" stroke="#000000" d="M100.662,-73.9385C100.662,-66.2589 100.662,-57.2711 100.662,-48.8221"></path>
+<polygon fill="#000000" stroke="#000000" points="104.1621,-48.5472 100.662,-38.5472 97.1621,-48.5472 104.1621,-48.5472"></polygon>
+</g>
+</g>
+</svg>
+
+            </div>
           </div>
-          <aside class="notes">
-            <p>
-              С математической точки зрения приложение определено и понятно,
-              но как использовать такую спецификацию?
-              
-              
-            </p>
-          </aside>
         </section>
         <section>
           <div class="fullsize flex align-items-center pad-center">
@@ -772,11 +806,6 @@
               <div class="fragment">
                 <h1 class="sub-header mb3">Вариант 1</h1>
                 <pre><code class="clojure">(def response
-  (compile-app :response [:req]))</code></pre>
-              </div>
-              <div class="fragment">
-                <h1 class="sub-header mt4 mb3">Вариант 2</h1>
-                <pre><code class="clojure">(def response
   (compile-app :response [:req :db]))
 
 (define app :main
@@ -788,37 +817,86 @@
 ((compile-app app :main [])) ; run the server
 </code></pre>
               </div>
+              <div class="fragment">
+                <h1 class="sub-header mt4 mb3">Вариант 2</h1>
+                <pre><code class="clojure">(define app :response :scope :req ...)
+(define app :db       :scope :app ...)
+
+</code></pre>
+              </div>
             </div>
           </div>
-          <aside class="notes">
-            <p>"Из коробки" у нас есть два варианта:</p>
-            <p>1. "В стиле PHP" <span class="arrow">&#x27f6</span>
-            </p>
-            <p>
-              Т.е. используем :response в качестве точки входа и
-              пересчитываем всё что нужно при каждом запросе.
-            </p>
-            <p>2. Отслеживаем зависимости вручную <span class="arrow">&#x27f6</span>
-            </p>
-            <p>
-              Несмотря на то, что в данном конкретном примере всё просто,
-              не трудно представить вместо :db длинный список параметров,
-              а вместо двух-уровневого приложения стек из многих уровней, где каждый
-              должен получить не только свои зависимости, но и зависимости всех уровней,
-              которые он вызывает.
-            </p>
-            <p>
-              Так же следует заметить, что в случаи применения второго варианта
-              теряется возможность сборки приложения из нескольких частей путём
-              простого слияния определений в один граф, так как любое такое
-              слияние может изменить зависимости того или иного уровня.
-            </p>
-            <p>
-              Нам не зачем идти на компромисы, поскольку существует оптимальное решение!
-              
-              
-            </p>
-          </aside>
+        </section>
+        <section>
+          <div class="fullsize flex align-items-center pad-center">
+            <div>
+              <h1 class="sub-header mb3">Вариант 1</h1>
+              <pre><code class="clojure"><span>(define app :query :args [:req]         :fn parse-req-query)
+(define app :main  :args [:req-handler] :fn run-server)</span>
+
+<span class="fragment">(define app :this-cool-thing ...)
+(define app :that-cool-thing ...)</span>
+
+<span class="fragment">(define app :req-handler
+  :args [:a :b :c :d, ..., :x :y :z]
+  :fn (make-partial
+        (compile-app app :response [:a :b, ..., :req]))</span>
+
+<span class="fragment">(define app :sub-request-handler
+  :args [:x :y :z]
+  :fn (make-partial
+        (compile-app app ::sub-request-handler [:x :y :z :foo])))</span>
+
+<span class="fragment">(merge-app app cool-third-party-plugin)</span>
+
+<span class="fragment">; Good luck with tracking plugin's dependencies!
+
+</span></code></pre>
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="fullsize flex align-items-center pad-center">
+            <div>
+              <h1 class="sub-header mb3">Вариант 2</h1>
+              <pre><code class="clojure"><span>(define app :json-spaces
+  :scope :app
+  :args [:config]
+  :fn (fn [config]
+        (if (:production config) 0 2)))
+
+(define app :serialize
+  :scope :app
+  :args [:json-spaces]
+  :fn (fn [spaces]
+        #(JSON/stringify % nil spaces)))
+
+(merge-app app cool-third-party-plugin)
+
+</span></code></pre>
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="fullsize flex align-items-center pad-center">
+            <div>
+              <h1 class="sub-header mb3">Вариант 2...</h1>
+              <pre><code class="clojure"><span>; - Please, support pretty parameter from query</span>
+<span class="fragment">; - Ok...
+
+(define app :json-spaces
+  :scope :req
+  :args [:query :config]
+  :fn (fn [q config]
+        (if (and (:production config) (not (:pretty q)))
+          0
+          2)))</span>
+
+<span class="fragment">; Good luck with tracking :json-spaces and :serialize dependents!
+
+</span></code></pre>
+            </div>
+          </div>
         </section>
         <section>
           <div class="fullsize flex align-items-center pad-center">
@@ -1054,58 +1132,21 @@
         </section>
         <section>
           <div class="fullsize flex align-items-center pad-center">
-            <pre><code class="clojure"><span class="fragment">(define app :serialize
-  :args [:config]
-  :fn (fn [{production? :production?}]
-        (if production?
-          pr-str
-          pprint-str)))</span>
+            <div>
+              <h1 class="sub-header mb3">Уровень!</h1>
+              <pre><code class="clojure"><span>; - Please, support pretty parameter from query</span>
+<span class="fragment">; - Yep, no problem!
 
+(define app :json-spaces
+  :args [:query :config]
+  :fn (fn [q config]
+        (if (and (:production config) (not (:pretty q)))
+          0
+          2)))
 
-<span class="fragment">(define app :serialize
-  :args [:req :config]
-  :fn (fn [req {production? :production?}]
-        (if (and production? (not (-> req :query :pretty)))
-          pr-str
-          pprint-str)))
 </span></code></pre>
+            </div>
           </div>
-          <aside class="notes">
-            <p>
-              Покажем гибкость и удобство получившейся системы на простом,
-              но достаточно реалистичном примере.
-            </p>
-            <p>
-              Предположим, что нам потребовалось возвращать пользователям
-              EDN ответы. Для этого определим функцию <span class="inline-code">serialize</span>,
-              которая будет принимать значение для сериализации и возвращать строку.
-              Так же, предположим, что для облегчения отладки во время разработки
-              мы хотим видеть красиво отформатированные ответы. В первом приближении
-              определение может иметь следующий вид <span class="arrow">&#x27f6</span>
-            </p>
-            <p><span class="inline-code">serialize</span> вычисляется один раз за время
-              работы приложения, а затем повторно используется.
-            </p>
-            <p>
-              Теперь предположим, что мы захотели видеть красивые ответы даже
-              в продуктиве если в URL присутствует параметр <span class="inline-code">pretty</span>.
-              Всё, что для этого нужно - это немного изменить определение! <span class="arrow">&#x27f6</span>
-              
-              
-            </p>
-          </aside>
-        </section>
-        <section>
-          <div class="fullsize flex align-items-center pad-center"><a href="https://github.com/easy-app-framework/core.clj">https://github.com/easy-app-framework/core.clj</a></div>
-          <aside class="notes">
-            <p>Все показанные ранее примеры реально работают :)</p>
-            <p>
-              Вкратце пробежимся по прочим деталям библиотеки, которые не меняют
-              общей картины, но важны для практического использования...
-              
-              
-            </p>
-          </aside>
         </section>
         <section>
           <div class="fullsize flex align-items-center pad-center">
@@ -1234,69 +1275,24 @@
         <section>
           <div class="fullsize flex align-items-center pad-center">
             <div>
-              <h1 class="header mb3">EasyApp vs DI</h1>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Feature</th>
-                    <th>EasyApp</th>
-                    <th>Traditional DI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="fw-600 gray">Primary use case</td>
-                    <td>Solve a certain structural problem.</td>
-                    <td>Make things configurable, overridable, facilitate app initialization.</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-600 gray">Evaluation strategy</td>
-                    <td>
-                      Compilation to efficient code is a must.
-                      Even light functions can have a complex
-                      control flow.
-                    </td>
-                    <td>Dynamic evaluation mostly.</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-600 gray">Support for levels</td>
-                    <td>It's a main feature!</td>
-                    <td>Very limited and quirky in form of scopes.</td>
-                  </tr>
-                </tbody>
-              </table>
+              <h1 class="header mb2">Для чего easy-app?</h1>
+              <ol>
+                <li class="mv2 fragment">Web-фреймворки</li>
+                <li class="mv2 fragment">Замена паттерну "Шаблонный метод"</li>
+              </ol>
+              <h1 class="header mb2 mt4 fragment">Самое важное</h1>
+              <ol>
+                <li class="mv2 fragment">Уровень узла может и должен выводиться автоматически</li>
+                <li class="mv2 fragment">Компиляция в эффективный код весьма полезна</li>
+              </ol>
             </div>
           </div>
-          <aside class="notes">
-            <p class="fw-600">Make things configurable...</p>
-            <p>
-              Если посмотреть на инструменты популярные в Clojure
-              community (например https://github.com/tolitius/mount),
-              то там речь идёт о старте определённых частей приложения,
-              перезагрузке определённых частей, и.т.п, что может быть удобно
-              при интерактивной разработки. Подобный функционал вне объёма проекта.
-              Здесь речь идёт не а каком-то принципиальном ограничении, а о разных
-              интерпретациях одной и той же струтктуры данных,
-              и одна их них остаётся за бортом.
-            </p>
-            <p class="fw-600">Support for levels is very limited and quirky...</p>
-            <p>
-              Механизм скопов в традиционных DI контейнерах
-              по крайней мере требует ручной аннотации
-              принадлежности каждого узла тому или иному скопу,
-              что эквивалентно ситуации с ручным отслеживанием
-              зависимостей уровня (Вариант 2 из доклада).
-              Помимо этого, реализация стека из нескольких уровней
-              требует учёта целого рядя странностей,
-              своих для каждого контейнера.
-              
-              
-            </p>
-          </aside>
         </section>
         <section>
           <div class="fullsize flex align-items-center pad-center">
-            <h1 class="header">Спасибо за внимание!</h1>
+            <div>
+              <h1 class="header mb2">Спасибо за внимание!</h1><a href="https://github.com/easy-app-framework/core.clj">https://github.com/easy-app-framework/core.clj</a>
+            </div>
           </div>
         </section>
       </div>

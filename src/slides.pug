@@ -10,18 +10,10 @@ mixin arr
 section
   .fullsize.flex.align-items-center.pad-center
     div
-      h1.header.mb1 EasyApp
+      h1.header.mb1 easy-app
       p IoC programming framework
 
   aside.notes
-    p.
-      При выборе названия доклада я долго сомневался.
-      С одной стороны опыт общения с разработчиками подсказывал,
-      что лучше избегать таких слов как "Dependency injection"
-      или "IoC контейнер", поскольку они сразу же провоцируют ассоциации
-      не с тем о чём данный доклад, с другой - о Dependency injection
-      и пойдёт речь, с той лишь разницей, что "control flow" будет более
-      богатой структуры, да и "use case" несколько отличаться.
     p.
       Символ #[+arr] в комментариях означает,
       что прежде чем читать дальше нужно открыть
@@ -35,11 +27,6 @@ section
       li.mv2 Доработка идеи
       li.mv2 Реализация, использование, сравнение и итоги.
 
-  aside.notes
-    p.
-      Первая часть доклада может показаться тривиальной,
-      но обозначить базовую идею всё же стоит.
-
 
 section
   .fullsize.flex.align-items-center.pad-center
@@ -50,7 +37,7 @@ section
 
   aside.notes
     p.
-      Для этого посмотрим на наш код как на граф,
+      Посмотрим на наш код как на граф,
       вершины которого обозначают результаты элементарных операций,
       а рёбра их аргументы.
 
@@ -114,7 +101,7 @@ section
     .example-graph.mr4
       include examples/complex.svg
     pre: code.clojure
-      span.fragment.
+      span.
         (define app :result :args [:abcd :xy] :fn +)
         (define app :abcd   :args [:b :ab]    :fn +)
         (define app :ab     :args [:b :a]     :fn +)
@@ -133,7 +120,7 @@ section
 
   aside.notes
     p.
-      Это может выглядеть следующим образом...
+      В контексте EasyApp это выгдядит так...
     p.
       Сперва определим граф. #[+arr]
     p.
@@ -146,9 +133,7 @@ section
       заметить, что речь идёт о поддержке кода весьма определённой структуры.
       Мы не можем создать аналоги таких конструкции как стеки, замыкания, и.т.п.,
       в то время как необходимость в них возникает практически сразу.
-    p.
-      Покажем это на примере.
-      Для этого представим бэкэнд типичного WEB-приложения...
+
 
 section
   .fullsize.flex.align-items-center.pad-center
@@ -170,10 +155,8 @@ section
         (define app :config
           :fn #(read "config.edn"))
 
-  aside.notes
-    p.
-      С математической точки зрения приложение определено и понятно,
-      но как использовать такую спецификацию?
+    .example-graph(style="margin-left: 80px")
+      include examples/web.svg
 
 
 section
@@ -183,11 +166,6 @@ section
     div
       .fragment
         h1.sub-header.mb3 Вариант 1
-        pre: code.clojure.
-          (def response
-            (compile-app :response [:req]))
-      .fragment
-        h1.sub-header.mt4.mb3 Вариант 2
         pre: code.clojure.
           (def response
             (compile-app :response [:req :db]))
@@ -200,29 +178,97 @@ section
 
           ((compile-app app :main [])) ; run the server
 
-  aside.notes
-    p.
-      "Из коробки" у нас есть два варианта:
-    p.
-      1. "В стиле PHP" #[+arr]
-    p.
-      Т.е. используем :response в качестве точки входа и
-      пересчитываем всё что нужно при каждом запросе.
-    p.
-      2. Отслеживаем зависимости вручную #[+arr]
-    p.
-      Несмотря на то, что в данном конкретном примере всё просто,
-      не трудно представить вместо :db длинный список параметров,
-      а вместо двух-уровневого приложения стек из многих уровней, где каждый
-      должен получить не только свои зависимости, но и зависимости всех уровней,
-      которые он вызывает.
-    p.
-      Так же следует заметить, что в случаи применения второго варианта
-      теряется возможность сборки приложения из нескольких частей путём
-      простого слияния определений в один граф, так как любое такое
-      слияние может изменить зависимости того или иного уровня.
-    p.
-      Нам не зачем идти на компромисы, поскольку существует оптимальное решение!
+      .fragment
+        h1.sub-header.mt4.mb3 Вариант 2
+        pre: code.clojure.
+          (define app :response :scope :req ...)
+          (define app :db       :scope :app ...)
+
+
+section
+  .fullsize.flex.align-items-center.pad-center: div
+    h1.sub-header.mb3 Вариант 1
+    pre: code.clojure
+      span.
+        (define app :query :args [:req]         :fn parse-req-query)
+        (define app :main  :args [:req-handler] :fn run-server)
+      |
+      |
+      |
+      span.fragment.
+        (define app :this-cool-thing ...)
+        (define app :that-cool-thing ...)
+      |
+      |
+      |
+      span.fragment.
+        (define app :req-handler
+          :args [:a :b :c :d, ..., :x :y :z]
+          :fn (make-partial
+                (compile-app app :response [:a :b, ..., :req]))
+      |
+      |
+      |
+      span.fragment.
+        (define app :sub-request-handler
+          :args [:x :y :z]
+          :fn (make-partial
+                (compile-app app ::sub-request-handler [:x :y :z :foo])))
+      |
+      |
+      |
+      span.fragment.
+        (merge-app app cool-third-party-plugin)
+      |
+      |
+      |
+      span.fragment.
+        ; Good luck with tracking plugin's dependencies!
+
+
+section
+  .fullsize.flex.align-items-center.pad-center: div
+    h1.sub-header.mb3 Вариант 2
+    pre: code.clojure
+      span.
+        (define app :json-spaces
+          :scope :app
+          :args [:config]
+          :fn (fn [config]
+                (if (:production config) 0 2)))
+
+        (define app :serialize
+          :scope :app
+          :args [:json-spaces]
+          :fn (fn [spaces]
+                #(JSON/stringify % nil spaces)))
+
+        (merge-app app cool-third-party-plugin)
+
+
+section
+  .fullsize.flex.align-items-center.pad-center: div
+    h1.sub-header.mb3 Вариант 2...
+    pre: code.clojure
+      span.
+        ; - Please, support pretty parameter from query
+      |
+      |
+      span.fragment.
+        ; - Ok...
+
+        (define app :json-spaces
+          :scope :req
+          :args [:query :config]
+          :fn (fn [q config]
+                (if (and (:production config) (not (:pretty q)))
+                  0
+                  2)))
+      |
+      |
+      |
+      span.fragment.
+        ; Good luck with tracking :json-spaces and :serialize dependents!
 
 
 section
@@ -281,57 +327,22 @@ section
 
 
 section
-  .fullsize.flex.align-items-center.pad-center
+  .fullsize.flex.align-items-center.pad-center: div
+    h1.sub-header.mb3 Уровень!
     pre: code.clojure
-      span.fragment.
-        (define app :serialize
-          :args [:config]
-          :fn (fn [{production? :production?}]
-                (if production?
-                  pr-str
-                  pprint-str)))
-      |
-      |
+      span.
+        ; - Please, support pretty parameter from query
       |
       |
       span.fragment.
-        (define app :serialize
-          :args [:req :config]
-          :fn (fn [req {production? :production?}]
-                (if (and production? (not (-> req :query :pretty)))
-                  pr-str
-                  pprint-str)))
+        ; - Yep, no problem!
 
-  aside.notes
-    p.
-      Покажем гибкость и удобство получившейся системы на простом,
-      но достаточно реалистичном примере.
-    p.
-      Предположим, что нам потребовалось возвращать пользователям
-      EDN ответы. Для этого определим функцию #[+code serialize],
-      которая будет принимать значение для сериализации и возвращать строку.
-      Так же, предположим, что для облегчения отладки во время разработки
-      мы хотим видеть красиво отформатированные ответы. В первом приближении
-      определение может иметь следующий вид #[+arr]
-    p.
-      #[+code serialize] вычисляется один раз за время
-      работы приложения, а затем повторно используется.
-    p.
-      Теперь предположим, что мы захотели видеть красивые ответы даже
-      в продуктиве если в URL присутствует параметр #[+code pretty].
-      Всё, что для этого нужно - это немного изменить определение! #[+arr]
-
-
-section
-  .fullsize.flex.align-items-center.pad-center
-    a(href="https://github.com/easy-app-framework/core.clj") https://github.com/easy-app-framework/core.clj
-
-  aside.notes
-    p.
-      Все показанные ранее примеры реально работают :)
-    p.
-      Вкратце пробежимся по прочим деталям библиотеки, которые не меняют
-      общей картины, но важны для практического использования...
+        (define app :json-spaces
+          :args [:query :config]
+          :fn (fn [q config]
+                (if (and (:production config) (not (:pretty q)))
+                  0
+                  2)))
 
 
 section
@@ -442,55 +453,17 @@ section
 
 section
   .fullsize.flex.align-items-center.pad-center: div
-    h1.header.mb3 EasyApp vs DI
-    table.table
-      thead
-        tr
-          th Feature
-          th EasyApp
-          th Traditional DI
-      tbody
-        tr
-          td.fw-600.gray Primary use case
-          td Solve a certain structural problem.
-          td Make things configurable, overridable, facilitate app initialization.
-        tr
-          td.fw-600.gray Evaluation strategy
-          td.
-            Compilation to efficient code is a must.
-            Even light functions can have a complex
-            control flow.
-          td Dynamic evaluation mostly.
-        tr
-          td.fw-600.gray Support for levels
-          td It's a main feature!
-          td Very limited and quirky in form of scopes.
-
-  aside.notes
-    p.fw-600.
-      Make things configurable...
-    p.
-      Если посмотреть на инструменты популярные в Clojure
-      community (например https://github.com/tolitius/mount),
-      то там речь идёт о старте определённых частей приложения,
-      перезагрузке определённых частей, и.т.п, что может быть удобно
-      при интерактивной разработки. Подобный функционал вне объёма проекта.
-      Здесь речь идёт не а каком-то принципиальном ограничении, а о разных
-      интерпретациях одной и той же струтктуры данных,
-      и одна их них остаётся за бортом.
-    p.fw-600.
-      Support for levels is very limited and quirky...
-    p.
-      Механизм скопов в традиционных DI контейнерах
-      по крайней мере требует ручной аннотации
-      принадлежности каждого узла тому или иному скопу,
-      что эквивалентно ситуации с ручным отслеживанием
-      зависимостей уровня (Вариант 2 из доклада).
-      Помимо этого, реализация стека из нескольких уровней
-      требует учёта целого рядя странностей,
-      своих для каждого контейнера.
+    h1.header.mb2 Для чего easy-app?
+    ol
+      li.mv2.fragment Web-фреймворки
+      li.mv2.fragment Замена паттерну "Шаблонный метод"
+    h1.header.mb2.mt4.fragment Самое важное
+    ol
+      li.mv2.fragment Уровень узла может и должен выводиться автоматически
+      li.mv2.fragment Компиляция в эффективный код весьма полезна
 
 
 section
-  .fullsize.flex.align-items-center.pad-center
-    h1.header Спасибо за внимание!
+  .fullsize.flex.align-items-center.pad-center: div
+    h1.header.mb2 Спасибо за внимание!
+    a(href="https://github.com/easy-app-framework/core.clj") https://github.com/easy-app-framework/core.clj

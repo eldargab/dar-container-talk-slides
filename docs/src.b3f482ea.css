@@ -493,7 +493,7 @@ pre code {
   padding: 0;
 }
 .pad-center {
-  padding-bottom: 8%;
+  padding-bottom: 0;
 }
 .gray {
   color: var(--gray);
