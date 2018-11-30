@@ -839,13 +839,9 @@
 
 <span class="fragment">(define app :req-handler
   :args [:a :b :c :d, ..., :x :y :z]
-  :fn (make-partial
-        (compile-app app :response [:a :b, ..., :req]))</span>
-
-<span class="fragment">(define app :sub-request-handler
-  :args [:x :y :z]
-  :fn (make-partial
-        (compile-app app ::sub-request-handler [:x :y :z :foo])))</span>
+  :fn (let [f (compile-app app :response [:a :b, ..., :x :y :z :req])]
+        (fn [& args]
+          (apply partial f args)))</span>
 
 <span class="fragment">(merge-app app cool-third-party-plugin)</span>
 

@@ -204,16 +204,9 @@ section
       span.fragment.
         (define app :req-handler
           :args [:a :b :c :d, ..., :x :y :z]
-          :fn (make-partial
-                (compile-app app :response [:a :b, ..., :req]))
-      |
-      |
-      |
-      span.fragment.
-        (define app :sub-request-handler
-          :args [:x :y :z]
-          :fn (make-partial
-                (compile-app app ::sub-request-handler [:x :y :z :foo])))
+          :fn (let [f (compile-app app :response [:a :b, ..., :x :y :z :req])]
+                (fn [& args]
+                  (apply partial f args)))
       |
       |
       |
