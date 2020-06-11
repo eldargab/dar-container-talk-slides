@@ -5722,7 +5722,8 @@ _reveal.default.initialize({
   history: true,
   center: false,
   controlsTutorial: false,
-  pdfMaxPagesPerSlide: 1
+  pdfMaxPagesPerSlide: 1,
+  showNotes: true
 });
 },{"../reveal/reveal.js":"F51w","highlight.js/lib/highlight":"R7gn","highlight.js/lib/languages/clojure":"T7Xh"}]},{},["Focm"], null)
 //# sourceMappingURL=src.2ad6848e.map
